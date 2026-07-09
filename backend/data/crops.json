@@ -1,0 +1,277 @@
+[
+  {
+    "id": "lettuce",
+    "name": "Lettuce",
+    "icon": "🥬",
+    "category": "Leafy Green",
+    "description": "Fast-growing leafy green, one of the most popular and forgiving hydroponic crops for beginners.",
+    "air_temp_range": { "min": 18, "max": 24, "unit": "°C" },
+    "water_temp_range": { "min": 18, "max": 22, "unit": "°C" },
+    "humidity_range": { "min": 50, "max": 70, "unit": "%" },
+    "ph_range": { "min": 5.5, "max": 6.5 },
+    "ec_range": { "min": 0.8, "max": 1.8, "unit": "mS/cm" },
+    "water_consumption": { "value": 1.5, "unit": "L/day per plant (mature)" },
+    "light_hours": { "min": 14, "max": 16, "unit": "hrs/day" },
+    "light_intensity": { "min": 200, "max": 400, "unit": "µmol/m²/s (PPFD)" },
+    "growth_cycle_days": { "min": 30, "max": 45 },
+    "suitable_methods": ["nft", "dwc", "ebb_and_flow", "vertical_farming"],
+    "stages": {
+      "seedling": {
+        "ph": { "min": 5.5, "max": 6.0 },
+        "ec": { "min": 0.6, "max": 0.9 },
+        "light_hours": 16,
+        "light_intensity": { "min": 100, "max": 200 },
+        "air_temp": { "min": 20, "max": 22 },
+        "water_temp": { "min": 19, "max": 21 },
+        "ai_notes": "Keep EC low to avoid stressing young roots. Maintain high humidity (60-70%) to prevent seedling wilt."
+      },
+      "vegetative": {
+        "ph": { "min": 5.5, "max": 6.2 },
+        "ec": { "min": 0.9, "max": 1.4 },
+        "light_hours": 16,
+        "light_intensity": { "min": 250, "max": 350 },
+        "air_temp": { "min": 18, "max": 24 },
+        "water_temp": { "min": 18, "max": 22 },
+        "ai_notes": "Rapid leaf growth phase. Increase EC gradually and ensure consistent light cycle to prevent bolting."
+      },
+      "flowering_fruiting": {
+        "ph": { "min": 5.8, "max": 6.5 },
+        "ec": { "min": 1.2, "max": 1.8 },
+        "light_hours": 14,
+        "light_intensity": { "min": 300, "max": 400 },
+        "air_temp": { "min": 18, "max": 23 },
+        "water_temp": { "min": 18, "max": 21 },
+        "ai_notes": "Lettuce is harvested before true flowering (bolting). If bolting begins, harvest immediately as leaves turn bitter."
+      },
+      "harvest": {
+        "ph": { "min": 5.8, "max": 6.5 },
+        "ec": { "min": 1.0, "max": 1.6 },
+        "light_hours": 12,
+        "light_intensity": { "min": 200, "max": 300 },
+        "air_temp": { "min": 16, "max": 20 },
+        "water_temp": { "min": 16, "max": 20 },
+        "ai_notes": "Lower temperature slightly before harvest to improve crispness and shelf life. Harvest in early morning for best quality."
+      }
+    }
+  },
+  {
+    "id": "basil",
+    "name": "Basil",
+    "icon": "🌿",
+    "category": "Herb",
+    "description": "Aromatic herb with high market value, well suited to NFT and DWC systems with warm conditions.",
+    "air_temp_range": { "min": 20, "max": 27 },
+    "water_temp_range": { "min": 20, "max": 24 },
+    "humidity_range": { "min": 40, "max": 60, "unit": "%" },
+    "ph_range": { "min": 5.5, "max": 6.5 },
+    "ec_range": { "min": 1.0, "max": 1.6, "unit": "mS/cm" },
+    "water_consumption": { "value": 1.2, "unit": "L/day per plant (mature)" },
+    "light_hours": { "min": 14, "max": 18, "unit": "hrs/day" },
+    "light_intensity": { "min": 300, "max": 500, "unit": "µmol/m²/s (PPFD)" },
+    "growth_cycle_days": { "min": 28, "max": 35 },
+    "suitable_methods": ["nft", "dwc", "drip", "vertical_farming"],
+    "stages": {
+      "seedling": {
+        "ph": { "min": 5.5, "max": 6.0 },
+        "ec": { "min": 0.6, "max": 1.0 },
+        "light_hours": 16,
+        "light_intensity": { "min": 150, "max": 250 },
+        "air_temp": { "min": 22, "max": 25 },
+        "water_temp": { "min": 21, "max": 23 },
+        "ai_notes": "Basil seedlings are sensitive to cold water. Keep water temperature above 20°C to avoid root shock."
+      },
+      "vegetative": {
+        "ph": { "min": 5.5, "max": 6.3 },
+        "ec": { "min": 1.0, "max": 1.4 },
+        "light_hours": 18,
+        "light_intensity": { "min": 350, "max": 450 },
+        "air_temp": { "min": 22, "max": 27 },
+        "water_temp": { "min": 20, "max": 24 },
+        "ai_notes": "Pinch growing tips to encourage bushy growth. High light drives essential oil concentration and aroma."
+      },
+      "flowering_fruiting": {
+        "ph": { "min": 5.8, "max": 6.5 },
+        "ec": { "min": 1.2, "max": 1.6 },
+        "light_hours": 16,
+        "light_intensity": { "min": 350, "max": 500 },
+        "air_temp": { "min": 20, "max": 26 },
+        "water_temp": { "min": 20, "max": 23 },
+        "ai_notes": "Remove flower spikes promptly to keep leaf production high and delay bitterness."
+      },
+      "harvest": {
+        "ph": { "min": 5.8, "max": 6.5 },
+        "ec": { "min": 1.0, "max": 1.4 },
+        "light_hours": 14,
+        "light_intensity": { "min": 300, "max": 400 },
+        "air_temp": { "min": 20, "max": 24 },
+        "water_temp": { "min": 20, "max": 22 },
+        "ai_notes": "Harvest in mid-morning after dew/condensation dries for best flavor concentration. Cut above a leaf node to promote regrowth."
+      }
+    }
+  },
+  {
+    "id": "tomato",
+    "name": "Tomato",
+    "icon": "🍅",
+    "category": "Fruiting Vegetable",
+    "description": "High-value fruiting crop requiring strong support, higher EC, and consistent pollination management.",
+    "air_temp_range": { "min": 20, "max": 27 },
+    "water_temp_range": { "min": 18, "max": 24 },
+    "humidity_range": { "min": 55, "max": 70, "unit": "%" },
+    "ph_range": { "min": 5.8, "max": 6.3 },
+    "ec_range": { "min": 2.0, "max": 3.5, "unit": "mS/cm" },
+    "water_consumption": { "value": 3.0, "unit": "L/day per plant (mature)" },
+    "light_hours": { "min": 14, "max": 18, "unit": "hrs/day" },
+    "light_intensity": { "min": 400, "max": 600, "unit": "µmol/m²/s (PPFD)" },
+    "growth_cycle_days": { "min": 70, "max": 100 },
+    "suitable_methods": ["drip", "dwc", "ebb_and_flow"],
+    "stages": {
+      "seedling": {
+        "ph": { "min": 5.8, "max": 6.0 },
+        "ec": { "min": 1.0, "max": 1.5 },
+        "light_hours": 16,
+        "light_intensity": { "min": 200, "max": 300 },
+        "air_temp": { "min": 22, "max": 26 },
+        "water_temp": { "min": 20, "max": 22 },
+        "ai_notes": "Keep EC low during germination and early root development to prevent nutrient burn on tender roots."
+      },
+      "vegetative": {
+        "ph": { "min": 5.8, "max": 6.2 },
+        "ec": { "min": 1.8, "max": 2.5 },
+        "light_hours": 16,
+        "light_intensity": { "min": 350, "max": 500 },
+        "air_temp": { "min": 21, "max": 26 },
+        "water_temp": { "min": 19, "max": 23 },
+        "ai_notes": "Prune suckers weekly and provide trellis support as vine growth accelerates."
+      },
+      "flowering_fruiting": {
+        "ph": { "min": 5.8, "max": 6.3 },
+        "ec": { "min": 2.5, "max": 3.5 },
+        "light_hours": 16,
+        "light_intensity": { "min": 450, "max": 600 },
+        "air_temp": { "min": 20, "max": 27 },
+        "water_temp": { "min": 18, "max": 22 },
+        "ai_notes": "Increase potassium-rich nutrients for fruit set. Gently shake trusses or use vibration pollination daily."
+      },
+      "harvest": {
+        "ph": { "min": 5.8, "max": 6.3 },
+        "ec": { "min": 2.2, "max": 3.0 },
+        "light_hours": 14,
+        "light_intensity": { "min": 400, "max": 500 },
+        "air_temp": { "min": 20, "max": 25 },
+        "water_temp": { "min": 18, "max": 22 },
+        "ai_notes": "Harvest when fruit reaches full color for best flavor. Reduce EC slightly to avoid cracking from rapid water uptake."
+      }
+    }
+  },
+  {
+    "id": "cucumber",
+    "name": "Cucumber",
+    "icon": "🥒",
+    "category": "Fruiting Vegetable",
+    "description": "Vigorous vining crop with high water demand, well suited to drip and NFT systems with vertical trellising.",
+    "air_temp_range": { "min": 21, "max": 29 },
+    "water_temp_range": { "min": 20, "max": 24 },
+    "humidity_range": { "min": 60, "max": 80, "unit": "%" },
+    "ph_range": { "min": 5.5, "max": 6.0 },
+    "ec_range": { "min": 1.8, "max": 2.5, "unit": "mS/cm" },
+    "water_consumption": { "value": 2.5, "unit": "L/day per plant (mature)" },
+    "light_hours": { "min": 12, "max": 16, "unit": "hrs/day" },
+    "light_intensity": { "min": 400, "max": 600, "unit": "µmol/m²/s (PPFD)" },
+    "growth_cycle_days": { "min": 50, "max": 65 },
+    "suitable_methods": ["drip", "nft", "dwc", "ebb_and_flow"],
+    "stages": {
+      "seedling": {
+        "ph": { "min": 5.5, "max": 5.8 },
+        "ec": { "min": 1.0, "max": 1.4 },
+        "light_hours": 14,
+        "light_intensity": { "min": 200, "max": 300 },
+        "air_temp": { "min": 23, "max": 27 },
+        "water_temp": { "min": 21, "max": 23 },
+        "ai_notes": "Cucumbers dislike root disturbance. Maintain warm water temperature to accelerate germination."
+      },
+      "vegetative": {
+        "ph": { "min": 5.5, "max": 5.9 },
+        "ec": { "min": 1.6, "max": 2.0 },
+        "light_hours": 16,
+        "light_intensity": { "min": 350, "max": 500 },
+        "air_temp": { "min": 22, "max": 28 },
+        "water_temp": { "min": 20, "max": 24 },
+        "ai_notes": "Train vines onto trellis early. High humidity supports rapid leaf expansion but watch for powdery mildew."
+      },
+      "flowering_fruiting": {
+        "ph": { "min": 5.6, "max": 6.0 },
+        "ec": { "min": 2.0, "max": 2.5 },
+        "light_hours": 14,
+        "light_intensity": { "min": 450, "max": 600 },
+        "air_temp": { "min": 21, "max": 29 },
+        "water_temp": { "min": 20, "max": 24 },
+        "ai_notes": "Consistent water delivery is critical during fruiting — irregular supply causes bitter or misshapen fruit."
+      },
+      "harvest": {
+        "ph": { "min": 5.6, "max": 6.0 },
+        "ec": { "min": 1.8, "max": 2.3 },
+        "light_hours": 12,
+        "light_intensity": { "min": 400, "max": 500 },
+        "air_temp": { "min": 20, "max": 26 },
+        "water_temp": { "min": 20, "max": 23 },
+        "ai_notes": "Harvest fruit while still firm and dark green; frequent picking encourages continued production."
+      }
+    }
+  },
+  {
+    "id": "barley_fodder",
+    "name": "Hydroponic Barley Fodder",
+    "icon": "🌾",
+    "category": "Fodder Crop",
+    "description": "Fast-cycle livestock fodder grown as a dense sprout mat, valued for very short growth cycles and low light needs.",
+    "air_temp_range": { "min": 18, "max": 24 },
+    "water_temp_range": { "min": 18, "max": 22 },
+    "humidity_range": { "min": 60, "max": 80, "unit": "%" },
+    "ph_range": { "min": 5.8, "max": 6.5 },
+    "ec_range": { "min": 1.2, "max": 1.8, "unit": "mS/cm" },
+    "water_consumption": { "value": 0.8, "unit": "L/day per tray" },
+    "light_hours": { "min": 12, "max": 16, "unit": "hrs/day" },
+    "light_intensity": { "min": 100, "max": 250, "unit": "µmol/m²/s (PPFD)" },
+    "growth_cycle_days": { "min": 7, "max": 9 },
+    "suitable_methods": ["ebb_and_flow", "vertical_farming"],
+    "stages": {
+      "seedling": {
+        "ph": { "min": 5.8, "max": 6.2 },
+        "ec": { "min": 0.0, "max": 0.5 },
+        "light_hours": 0,
+        "light_intensity": { "min": 0, "max": 50 },
+        "air_temp": { "min": 18, "max": 21 },
+        "water_temp": { "min": 18, "max": 20 },
+        "ai_notes": "Days 1-2: soak and dark germination. Rinse 2-3 times daily; no nutrient solution needed yet, plain water only."
+      },
+      "vegetative": {
+        "ph": { "min": 5.8, "max": 6.5 },
+        "ec": { "min": 1.0, "max": 1.6 },
+        "light_hours": 14,
+        "light_intensity": { "min": 100, "max": 200 },
+        "air_temp": { "min": 18, "max": 24 },
+        "water_temp": { "min": 18, "max": 22 },
+        "ai_notes": "Days 3-6: rapid shoot growth. Introduce light nutrient solution and low light to green up the mat."
+      },
+      "flowering_fruiting": {
+        "ph": { "min": 5.8, "max": 6.5 },
+        "ec": { "min": 1.2, "max": 1.8 },
+        "light_hours": 14,
+        "light_intensity": { "min": 150, "max": 250 },
+        "air_temp": { "min": 18, "max": 23 },
+        "water_temp": { "min": 18, "max": 21 },
+        "ai_notes": "Not applicable for fodder — barley is harvested before flowering. Treat as the final maturation window before harvest."
+      },
+      "harvest": {
+        "ph": { "min": 5.8, "max": 6.5 },
+        "ec": { "min": 1.0, "max": 1.5 },
+        "light_hours": 12,
+        "light_intensity": { "min": 100, "max": 200 },
+        "air_temp": { "min": 18, "max": 22 },
+        "water_temp": { "min": 18, "max": 20 },
+        "ai_notes": "Days 7-9: harvest when root mat is dense and shoots reach 15-20cm. Feed root mat and all to livestock."
+      }
+    }
+  }
+]

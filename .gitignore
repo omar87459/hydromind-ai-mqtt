@@ -1,0 +1,25 @@
+# Python
+backend/venv/
+**/__pycache__/
+*.pyc
+
+# ML training artifacts — regenerated at build time (see ml_engine/dataset_generator.py, train.py)
+backend/ml_engine/data/*.csv
+backend/ml_engine/models/*.pkl
+backend/ml_engine/models/metadata.json
+
+# Node / frontend
+frontend/node_modules/
+frontend/dist/
+
+# Local tooling (portable Node.js binary, not part of the project)
+tools/
+
+# Env files
+.env
+.env.local
+.env.production
+backend/supabase_setup/.env
+
+# OS
+.DS_Store

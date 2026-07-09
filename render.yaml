@@ -1,0 +1,26 @@
+# Render Blueprint for the HydroMind AI backend.
+#
+# Deploy: in the Render dashboard, "New" -> "Blueprint", connect this repo.
+# Render reads this file and provisions the service automatically. After
+# the first deploy, set the secret env vars below in the Render dashboard
+# (Environment tab) — they are intentionally not stored in this file.
+services:
+  - type: web
+    name: hydromind-ai-backend
+    runtime: python
+    rootDir: backend
+    plan: free
+    buildCommand: >
+      pip install -r requirements.txt &&
+      python -m ml_engine.dataset_generator &&
+      python -m ml_engine.train
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false

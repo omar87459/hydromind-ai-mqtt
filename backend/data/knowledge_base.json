@@ -1,0 +1,92 @@
+[
+  {
+    "id": "kb-001",
+    "topic": "Why pH matters",
+    "keywords": ["ph", "important", "why", "matter", "acidity", "alkaline"],
+    "answer": "pH controls how well plant roots can absorb nutrients from the solution. Most hydroponic crops thrive between pH 5.5 and 6.5. Outside this range, key nutrients like iron, phosphorus, and calcium become chemically 'locked out' and unavailable to the plant even if they're present in the reservoir — causing deficiency symptoms despite correct nutrient dosing. Stable pH is one of the single most important factors in hydroponic success."
+  },
+  {
+    "id": "kb-002",
+    "topic": "Best method for lettuce",
+    "keywords": ["best", "method", "lettuce", "system", "recommend"],
+    "answer": "Lettuce grows best in Nutrient Film Technique (NFT) or Deep Water Culture (DWC). Both provide constant access to oxygenated nutrient solution, which suits lettuce's shallow, fast-growing root system. NFT is preferred for high-density commercial production, while DWC is simpler and more forgiving for beginners. Ebb and Flow and Vertical Farming setups also work well."
+  },
+  {
+    "id": "kb-003",
+    "topic": "How to reduce EC",
+    "keywords": ["reduce", "lower", "ec", "conductivity", "salinity", "too high"],
+    "answer": "To reduce EC (electrical conductivity, a measure of dissolved nutrient salts), dilute the reservoir by adding fresh pH-balanced water without additional nutrients. Do this gradually — adding too much water at once can shock the root system. Continuously monitor EC after dilution and adjust in small increments until the value falls back within the crop's ideal range. In automated systems, a freshwater dosing pump can perform this adjustment incrementally."
+  },
+  {
+    "id": "kb-004",
+    "topic": "Effects of high water temperature",
+    "keywords": ["water", "temperature", "high", "hot", "warm", "effect"],
+    "answer": "Water temperatures above the crop's ideal range (typically above 24-26°C for most crops) reduce dissolved oxygen levels in the nutrient solution, which suffocates roots and increases the risk of root rot and pathogens like Pythium. High water temperature also accelerates algae growth and can speed up nutrient degradation. Cooling fans, chillers, or shading the reservoir are common mitigations."
+  },
+  {
+    "id": "kb-005",
+    "topic": "Effects of low water temperature",
+    "keywords": ["water", "temperature", "low", "cold", "cool"],
+    "answer": "Water that is too cold slows nutrient uptake and root metabolic activity, leading to stunted growth even when nutrient levels are correct. Most hydroponic crops prefer water temperatures between 18-22°C. In cold climates, a submersible heater can maintain reservoir temperature within the ideal range."
+  },
+  {
+    "id": "kb-006",
+    "topic": "What is EC and why it matters",
+    "keywords": ["what", "ec", "electrical", "conductivity", "nutrient", "strength"],
+    "answer": "EC (Electrical Conductivity) measures the total concentration of dissolved nutrient salts in the solution, expressed in mS/cm. It acts as a proxy for nutrient strength — too low and plants are underfed, too high and plants can suffer nutrient burn or osmotic stress that makes it harder for roots to absorb water. Each crop and growth stage has an ideal EC range that increases as the plant matures and its nutrient demand grows."
+  },
+  {
+    "id": "kb-007",
+    "topic": "Choosing a hydroponic method",
+    "keywords": ["choose", "which", "method", "select", "system", "compare"],
+    "answer": "Choosing a method depends on crop type, budget, and technical experience. DWC and Ebb and Flow are beginner-friendly and forgiving of minor mistakes. NFT and Drip systems are more nutrient/water efficient but need reliable pumps. Aeroponics offers the fastest growth and highest efficiency but is the most technically demanding. Vertical Farming maximizes space for leafy greens and herbs in controlled environments."
+  },
+  {
+    "id": "kb-008",
+    "topic": "Signs of nutrient deficiency",
+    "keywords": ["deficiency", "yellow", "leaves", "symptom", "nutrient", "lacking"],
+    "answer": "Common deficiency signs include yellowing between leaf veins (often magnesium or iron), overall pale yellowing of older leaves (nitrogen), purplish leaf undersides (phosphorus), and browning leaf edges (potassium or calcium). Deficiencies are frequently caused by incorrect pH locking out nutrients rather than an actual lack of nutrients in solution, so always check pH first."
+  },
+  {
+    "id": "kb-009",
+    "topic": "Importance of dissolved oxygen",
+    "keywords": ["oxygen", "dissolved", "air", "aeration", "root"],
+    "answer": "Roots need dissolved oxygen to respire, just like leaves need CO2. Poorly oxygenated solution leads to weak roots, nutrient uptake problems, and increased risk of root rot pathogens. Air stones, air pumps, and the thin-film design of NFT channels are all ways hydroponic systems keep oxygen levels high."
+  },
+  {
+    "id": "kb-010",
+    "topic": "Role of light intensity and hours",
+    "keywords": ["light", "intensity", "hours", "ppfd", "photoperiod", "lighting"],
+    "answer": "Light drives photosynthesis and is measured by both duration (photoperiod, hours/day) and intensity (PPFD, µmol/m²/s). Leafy greens like lettuce and basil generally need 14-16 hours of moderate intensity light, while fruiting crops like tomato and cucumber need higher intensity light to support flowering and fruit development. Too little light slows growth; too much can cause leaf bleaching or heat stress."
+  },
+  {
+    "id": "kb-011",
+    "topic": "Root rot prevention",
+    "keywords": ["root", "rot", "disease", "pythium", "prevent"],
+    "answer": "Root rot is usually caused by low dissolved oxygen combined with warm water temperatures, creating ideal conditions for pathogens like Pythium. Prevent it by keeping water temperature below 24°C, maintaining strong aeration, keeping the reservoir dark to limit algae, and sanitizing equipment between grow cycles."
+  },
+  {
+    "id": "kb-012",
+    "topic": "Growth stages overview",
+    "keywords": ["growth", "stage", "seedling", "vegetative", "flowering", "harvest", "lifecycle"],
+    "answer": "Hydroponic crops typically move through four stages: Seedling (germination and early root development, low nutrient strength), Vegetative (rapid leaf/stem growth, increasing EC), Flowering/Fruiting (reproductive development, highest nutrient and light demand for fruiting crops), and Harvest (final maturation, sometimes with slightly reduced EC or temperature to improve quality). Each stage has different ideal pH, EC, light, and temperature targets."
+  },
+  {
+    "id": "kb-013",
+    "topic": "What is hydroponics",
+    "keywords": ["what", "is", "hydroponics", "definition", "soilless"],
+    "answer": "Hydroponics is a method of growing plants without soil, instead delivering nutrients directly to the roots through a water-based solution. This allows for precise control of pH, nutrient concentration, oxygen, and environmental conditions, typically resulting in faster growth, higher yields, and more efficient water use compared to soil-based farming."
+  },
+  {
+    "id": "kb-014",
+    "topic": "Humidity management",
+    "keywords": ["humidity", "moisture", "air", "manage"],
+    "answer": "Humidity affects transpiration — the rate at which plants pull water (and nutrients) up through their roots. Too low humidity causes excessive water loss and leaf stress; too high humidity slows transpiration and increases risk of fungal disease like powdery mildew or botrytis. Most hydroponic crops prefer 50-70% relative humidity, with fruiting crops like cucumber tolerating higher levels."
+  },
+  {
+    "id": "kb-015",
+    "topic": "Satellite communication for remote farms",
+    "keywords": ["satellite", "remote", "internet", "connectivity", "communication", "offline"],
+    "answer": "In remote farming regions with unreliable internet, HydroMind AI's architecture concept uses a local farm server to keep monitoring and automation running independently. When available, it syncs with the AI Cloud Platform; if a stable connection is unavailable, critical alerts and summarized data can be relayed via a satellite communication layer, ensuring farmers stay informed even off-grid. This is a conceptual prototype feature, not a live satellite integration."
+  }
+]

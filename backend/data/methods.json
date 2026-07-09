@@ -1,0 +1,123 @@
+[
+  {
+    "id": "dwc",
+    "name": "Deep Water Culture (DWC)",
+    "short_name": "DWC",
+    "icon": "🫧",
+    "description": "Plant roots hang directly into an oxygenated nutrient solution reservoir, suspended by net pots in a floating platform.",
+    "best_crops": ["lettuce", "basil", "tomato", "cucumber"],
+    "advantages": [
+      "Simple to build and maintain",
+      "Fast growth due to constant nutrient/oxygen access",
+      "Low mechanical complexity — fewer moving parts to fail",
+      "Excellent for leafy greens and herbs at scale"
+    ],
+    "limitations": [
+      "Requires a reliable air pump — root suffocation risk on power outage",
+      "Less suited to large, heavy fruiting plants without extra support",
+      "Water temperature stability is critical to prevent root rot"
+    ],
+    "water_efficiency": "High",
+    "complexity": "Beginner"
+  },
+  {
+    "id": "nft",
+    "name": "Nutrient Film Technique (NFT)",
+    "short_name": "NFT",
+    "icon": "〰️",
+    "description": "A thin, continuously flowing film of nutrient solution runs along sloped channels over exposed plant roots.",
+    "best_crops": ["lettuce", "basil", "cucumber"],
+    "advantages": [
+      "Very water and nutrient efficient — solution is recirculated",
+      "Good root oxygenation from thin film exposure",
+      "Scales well for commercial leafy green production"
+    ],
+    "limitations": [
+      "Highly vulnerable to pump failure — roots dry out within minutes",
+      "Not ideal for large root systems or heavy fruiting crops",
+      "Channel clogging can starve downstream plants"
+    ],
+    "water_efficiency": "High",
+    "complexity": "Intermediate"
+  },
+  {
+    "id": "ebb_and_flow",
+    "name": "Ebb and Flow",
+    "short_name": "Ebb & Flow",
+    "icon": "🌊",
+    "description": "Also called flood and drain — a grow tray is periodically flooded with nutrient solution, then drained back to a reservoir.",
+    "best_crops": ["lettuce", "tomato", "cucumber", "barley_fodder"],
+    "advantages": [
+      "Flexible for many crop types and container/media setups",
+      "Good balance of oxygen and nutrient delivery via flood cycles",
+      "Tolerant of brief pump interruptions since media retains moisture"
+    ],
+    "limitations": [
+      "Requires reliable timers to avoid over/under-watering",
+      "Growing media can build up salts over time, needs flushing",
+      "Moderate complexity to balance flood duration and frequency"
+    ],
+    "water_efficiency": "Medium",
+    "complexity": "Intermediate"
+  },
+  {
+    "id": "drip",
+    "name": "Drip System",
+    "short_name": "Drip",
+    "icon": "💧",
+    "description": "Nutrient solution is delivered directly to the base of each plant through drip emitters, either recovery or non-recovery.",
+    "best_crops": ["tomato", "cucumber", "basil"],
+    "advantages": [
+      "Precise, individualized dosing per plant",
+      "Well suited to larger fruiting crops with high water demand",
+      "Easy to scale from small to large commercial operations"
+    ],
+    "limitations": [
+      "Emitters can clog and require regular maintenance",
+      "Non-recovery systems waste runoff unless captured and reused",
+      "Slightly more plumbing complexity than reservoir-based systems"
+    ],
+    "water_efficiency": "Medium",
+    "complexity": "Intermediate"
+  },
+  {
+    "id": "aeroponics",
+    "name": "Aeroponics",
+    "short_name": "Aeroponics",
+    "icon": "☁️",
+    "description": "Roots are suspended in air inside a chamber and misted with nutrient solution at short intervals for maximum oxygenation.",
+    "best_crops": ["lettuce", "basil"],
+    "advantages": [
+      "Highest oxygenation of any method — very fast growth potential",
+      "Extremely water efficient, minimal runoff",
+      "Low disease pressure with well-managed misting cycles"
+    ],
+    "limitations": [
+      "Very sensitive to pump/nozzle failure — roots desiccate within minutes",
+      "Nozzle clogging requires frequent cleaning and filtration",
+      "Highest technical complexity and cost of setup"
+    ],
+    "water_efficiency": "Very High",
+    "complexity": "Advanced"
+  },
+  {
+    "id": "vertical_farming",
+    "name": "Vertical Farming",
+    "short_name": "Vertical",
+    "icon": "🏢",
+    "description": "Stacked growing layers (often combined with NFT, DWC, or ebb-and-flow) maximize yield per square meter of floor space using LED lighting.",
+    "best_crops": ["lettuce", "basil", "barley_fodder"],
+    "advantages": [
+      "Maximizes production density in limited floor space",
+      "Enables full climate and light control, independent of outdoor weather",
+      "Well suited to urban farms and controlled-environment agriculture"
+    ],
+    "limitations": [
+      "High upfront investment in racking, lighting, and climate control",
+      "Higher energy consumption due to full-spectrum LED lighting",
+      "Not practical for tall or heavy fruiting crops"
+    ],
+    "water_efficiency": "High",
+    "complexity": "Advanced"
+  }
+]

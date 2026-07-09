@@ -179,46 +179,16 @@ curl -X POST http://localhost:8000/rag/ask \
   -d '{"question": "Why is pH important?"}'
 ```
 
-## Moving beyond the local JSON dataset
-
-All data access goes through `backend/app/data_store.py`. Every function there
-(`get_crops`, `get_crop_by_id`, `get_methods_for_crop`, etc.) is written as if it
-queried a database, and now actually can: set `SUPABASE_URL` and `SUPABASE_KEY`
-in the environment and it reads from Supabase instead of the JSON files — no
-code changes, no router/service changes. See "Cloud Deployment" below.
-
-## Cloud Deployment (Vercel + Render + Supabase)
+## Cloud Deployment (Vercel + Render)
 
 This gives you a permanent public URL, reachable from any device, instead of
-only `localhost`. It needs free accounts on three services — I can't create
-these for you, but everything on the code side is already prepared. Do these
-in order:
+only `localhost`. By default it needs free accounts on just two services —
+Render (backend) and Vercel (frontend). The backend runs off the JSON files
+in `backend/data/` exactly as it does locally, no database required. I can't
+create these accounts for you (they need your email/GitHub login), but
+everything on the code side is already prepared.
 
-### 1. Create the Supabase project and load the data
-
-1. Go to [supabase.com](https://supabase.com), create a free account and a new
-   project. Wait for it to finish provisioning (~2 minutes).
-2. Open **SQL Editor** in the Supabase dashboard, paste the contents of
-   `backend/supabase_setup/schema.sql`, and run it. This creates the `crops`,
-   `methods`, and `knowledge_base` tables with public read access.
-3. Get your credentials from **Project Settings → API**:
-   - `Project URL` → this is `SUPABASE_URL`
-   - `anon public` key → this is `SUPABASE_KEY` (used by the deployed backend for read-only access)
-   - `service_role` key → only used locally, once, to seed the data (never deployed, never shared)
-4. Create `backend/supabase_setup/.env` (already gitignored) with:
-   ```
-   SUPABASE_URL=https://your-project.supabase.co
-   SUPABASE_SERVICE_KEY=your-service-role-key
-   ```
-5. From `backend/`, with the venv active, run the seed script once:
-   ```bash
-   python -m supabase_setup.seed
-   ```
-   This loads `crops.json`, `methods.json`, and `knowledge_base.json` into
-   Supabase. Re-run it any time you edit those files and want the cloud copy
-   to match.
-
-### 2. Push the code to GitHub
+### 1. Push the code to GitHub
 
 ```bash
 cd ~/Projects/hydromind-ai
@@ -235,48 +205,67 @@ git branch -M main
 git push -u origin main
 ```
 
-### 3. Deploy the backend on Render
+### 2. Deploy the backend on Render
 
 1. Go to [render.com](https://render.com), create a free account.
 2. **New → Blueprint**, connect your GitHub repo. Render reads `render.yaml`
    at the repo root and configures the service automatically (Python, build
    command that installs deps + generates the dataset + trains the ML
-   models, start command that runs uvicorn).
-3. Before/after the first deploy, open the service's **Environment** tab and
-   set:
-   - `SUPABASE_URL` — same value as above
-   - `SUPABASE_KEY` — the **anon** key (not the service role key — this runs
-     on a public server)
-   - `CORS_ORIGINS` — leave blank for now; you'll set this after step 4
-4. Deploy. Once live, note the backend's URL (something like
+   models, start command that runs uvicorn) — no env vars are required to
+   get it running.
+3. Deploy. Once live, note the backend's URL (something like
    `https://hydromind-ai-backend.onrender.com`) — test it:
    `curl https://your-backend.onrender.com/crops`
 
    Render's free tier spins the service down after inactivity — the first
    request after idling can take ~30-60s to wake back up.
 
-### 4. Deploy the frontend on Vercel
+### 3. Deploy the frontend on Vercel
 
 1. Go to [vercel.com](https://vercel.com), create a free account.
 2. **Add New → Project**, import the same GitHub repo.
 3. Set **Root Directory** to `frontend` (Vercel auto-detects Vite).
 4. Add an environment variable: `VITE_API_URL` = your Render backend URL
-   from step 3 (e.g. `https://hydromind-ai-backend.onrender.com`).
+   from step 2 (e.g. `https://hydromind-ai-backend.onrender.com`).
 5. Deploy. You'll get a public URL like `https://hydromind-ai.vercel.app` —
    this works from any device, on any network.
 
-### 5. Lock down CORS (recommended)
+### 4. Lock down CORS (recommended)
 
-Now that you know the Vercel URL, go back to the Render service's
-Environment tab and set `CORS_ORIGINS` to it (e.g.
-`https://hydromind-ai.vercel.app`), then redeploy. This restricts the API to
-requests from your actual frontend instead of any origin.
+Now that you know the Vercel URL, go to the Render service's **Environment**
+tab and set `CORS_ORIGINS` to it (e.g. `https://hydromind-ai.vercel.app`),
+then redeploy. This restricts the API to requests from your actual frontend
+instead of any origin.
 
-### 6. Verify
+### 5. Verify
 
 Open the Vercel URL on your phone (or any other device) and click through
 Crops → Live Monitoring → AI Knowledge Assistant to confirm everything
 talks to the deployed backend correctly.
+
+## Adding a real cloud database later (optional)
+
+If you outgrow the JSON files — e.g. you want to edit crop data without a
+redeploy, or add farm-specific data — `backend/app/data_store.py` already
+supports Supabase as a drop-in swap: set `SUPABASE_URL` and `SUPABASE_KEY`
+as env vars (locally or on Render) and every `data_store` function reads
+from Supabase instead, with zero code changes anywhere else.
+
+1. Create a free project at [supabase.com](https://supabase.com).
+2. In the SQL Editor, run `backend/supabase_setup/schema.sql` — creates the
+   `crops`, `methods`, and `knowledge_base` tables with public read access.
+3. From **Project Settings → API**, grab the `Project URL`, `anon public`
+   key, and `service_role` key.
+4. Create `backend/supabase_setup/.env` (gitignored) with:
+   ```
+   SUPABASE_URL=https://your-project.supabase.co
+   SUPABASE_SERVICE_KEY=your-service-role-key
+   ```
+5. From `backend/`, with the venv active: `python -m supabase_setup.seed` —
+   loads the JSON files into Supabase. Re-run any time you want the cloud
+   copy to match local edits.
+6. On Render, add `SUPABASE_URL` and `SUPABASE_KEY` (the anon key, not the
+   service role key) to the service's Environment tab and redeploy.
 
 ## Notes on the prototype scope
 

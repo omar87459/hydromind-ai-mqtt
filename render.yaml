@@ -1,9 +1,13 @@
 # Render Blueprint for the HydroMind AI backend.
 #
 # Deploy: in the Render dashboard, "New" -> "Blueprint", connect this repo.
-# Render reads this file and provisions the service automatically. After
-# the first deploy, set the secret env vars below in the Render dashboard
-# (Environment tab) — they are intentionally not stored in this file.
+# Render reads this file and provisions the service automatically.
+#
+# By default this runs entirely off the JSON files in backend/data/ — no
+# database needed. If you later want a real cloud database, create a
+# Supabase project (see backend/supabase_setup/), add SUPABASE_URL and
+# SUPABASE_KEY as env vars in the Render dashboard, and redeploy — no code
+# changes required (see backend/app/data_store.py).
 services:
   - type: web
     name: hydromind-ai-backend
@@ -18,9 +22,5 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.12.7
-      - key: SUPABASE_URL
-        sync: false
-      - key: SUPABASE_KEY
-        sync: false
       - key: CORS_ORIGINS
         sync: false

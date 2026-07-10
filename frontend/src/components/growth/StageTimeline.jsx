@@ -1,4 +1,4 @@
-import { STAGE_LABELS } from "../../context/AppContext";
+import { useTranslation } from "react-i18next";
 import { Sprout, Leaf, Flower2, Scissors } from "lucide-react";
 
 const STAGE_ICONS = {
@@ -9,6 +9,7 @@ const STAGE_ICONS = {
 };
 
 export default function StageTimeline({ stages, activeStage, onSelect }) {
+  const { t } = useTranslation();
   const activeIndex = stages.indexOf(activeStage);
 
   return (
@@ -57,7 +58,7 @@ export default function StageTimeline({ stages, activeStage, onSelect }) {
                   whiteSpace: "nowrap",
                 }}
               >
-                {STAGE_LABELS[stage]}
+                {t(`common.stages.${stage}`)}
               </div>
             </button>
             {i < stages.length - 1 && (

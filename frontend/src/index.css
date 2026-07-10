@@ -201,6 +201,24 @@ button {
   flex-direction: column;
 }
 
+/* RTL layout support (Arabic) — flip the sidebar to the trailing edge */
+[dir="rtl"] .sidebar {
+  left: auto;
+  right: 0;
+  border-right: none;
+  border-left: 1px solid var(--border);
+}
+
+[dir="rtl"] .main-area {
+  margin-left: 0;
+  margin-right: var(--sidebar-width);
+}
+
+/* Directional icons (arrows) that should mirror in RTL */
+[dir="rtl"] .rtl-flip {
+  transform: scaleX(-1);
+}
+
 .topbar {
   position: sticky;
   top: 0;
@@ -316,6 +334,15 @@ button {
   }
   .menu-toggle {
     display: inline-flex;
+  }
+  [dir="rtl"] .sidebar {
+    transform: translateX(100%);
+  }
+  [dir="rtl"] .sidebar.open {
+    transform: translateX(0);
+  }
+  [dir="rtl"] .main-area {
+    margin-right: 0;
   }
 }
 

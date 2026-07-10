@@ -1,11 +1,15 @@
 export const DEVICES = [
-  { key: "main_pump", label: "Main Water Pump", icon: "💧" },
-  { key: "nutrient_pump", label: "Nutrient Pump", icon: "🧪" },
-  { key: "ph_pump", label: "pH Dosing Pump", icon: "⚗️" },
-  { key: "grow_lights", label: "Grow Lights", icon: "💡" },
-  { key: "cooling_fan", label: "Cooling Fan", icon: "🌀" },
+  { key: "main_pump", icon: "💧" },
+  { key: "nutrient_pump", icon: "🧪" },
+  { key: "ph_pump", icon: "⚗️" },
+  { key: "grow_lights", icon: "💡" },
+  { key: "cooling_fan", icon: "🌀" },
 ];
 
+// Each suggestion returns either a static reasonKey (translated via
+// monitoring.reasons.<key>) or a reasonText taken directly from the
+// backend's dynamically-generated English recommendation text (not
+// translated — see the i18n scope note in README).
 export function deriveAutomationSuggestions(reading, issues = []) {
   const findIssue = (param) => issues.find((i) => i.parameter === param);
   const ecIssue = findIssue("ec");
@@ -22,28 +26,27 @@ export function deriveAutomationSuggestions(reading, issues = []) {
   return {
     main_pump: {
       on: true,
-      reason:
-        reading?.water_level < 40
-          ? "Water level is low — keep the pump running and schedule a reservoir refill."
-          : "Maintains circulation and oxygenation of the nutrient solution.",
+      reasonKey: reading?.water_level < 40 ? "mainPumpLow" : "mainPumpOk",
     },
     nutrient_pump: {
       on: !!(ecIssue && ecIssue.problem_detected.includes("below")),
-      reason: ecIssue ? ecIssue.recommended_action : "EC is within range — no dosing needed.",
+      reasonKey: ecIssue ? null : "nutrientOk",
+      reasonText: ecIssue ? ecIssue.recommended_action : null,
     },
     ph_pump: {
       on: !!phIssue,
-      reason: phIssue ? phIssue.recommended_action : "pH is within range — dosing pump idle.",
+      reasonKey: phIssue ? null : "phOk",
+      reasonText: phIssue ? phIssue.recommended_action : null,
     },
     grow_lights: {
       on: !(lightIssue && lightIssue.problem_detected.includes("above")),
-      reason: lightIssue
-        ? lightIssue.recommended_action
-        : "Light intensity is within target for this stage.",
+      reasonKey: lightIssue ? null : "lightsOk",
+      reasonText: lightIssue ? lightIssue.recommended_action : null,
     },
     cooling_fan: {
       on: !!tempIssue,
-      reason: tempIssue ? tempIssue.recommended_action : "Temperatures are within range — fan idle.",
+      reasonKey: tempIssue ? null : "fanOk",
+      reasonText: tempIssue ? tempIssue.recommended_action : null,
     },
   };
 }

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ResponsiveContainer,
   LineChart,
@@ -9,13 +10,13 @@ import {
   Tooltip,
 } from "recharts";
 
-const PARAM_OPTIONS = [
-  { key: "ph", label: "pH", unit: "" },
-  { key: "ec", label: "EC", unit: " mS/cm" },
-  { key: "water_temp", label: "Water Temp", unit: "°C" },
-  { key: "air_temp", label: "Air Temp", unit: "°C" },
-  { key: "humidity", label: "Humidity", unit: "%" },
-  { key: "light_intensity", label: "Light Intensity", unit: " µmol/m²/s" },
+const PARAM_KEYS = [
+  { key: "ph", unit: "" },
+  { key: "ec", unit: " mS/cm" },
+  { key: "water_temp", unit: "°C" },
+  { key: "air_temp", unit: "°C" },
+  { key: "humidity", unit: "%" },
+  { key: "light_intensity", unit: " µmol/m²/s" },
 ];
 
 function CustomTooltip({ active, payload, label, unit, paramLabel }) {
@@ -43,22 +44,24 @@ function CustomTooltip({ active, payload, label, unit, paramLabel }) {
 }
 
 export default function SensorTrendChart({ history }) {
+  const { t } = useTranslation();
   const [param, setParam] = useState("ph");
-  const active = PARAM_OPTIONS.find((p) => p.key === param);
+  const active = PARAM_KEYS.find((p) => p.key === param);
+  const activeLabel = t(`monitoring.params.${active.key}`);
 
   return (
     <div className="card">
       <div className="card-title-row">
-        <h3>Sensor Trend — {active.label}</h3>
+        <h3>{t("monitoring.sensorTrend", { param: activeLabel })}</h3>
         <select
           value={param}
           onChange={(e) => setParam(e.target.value)}
           className="btn btn-sm"
           style={{ cursor: "pointer" }}
         >
-          {PARAM_OPTIONS.map((p) => (
+          {PARAM_KEYS.map((p) => (
             <option key={p.key} value={p.key}>
-              {p.label}
+              {t(`monitoring.params.${p.key}`)}
             </option>
           ))}
         </select>
@@ -79,7 +82,7 @@ export default function SensorTrendChart({ history }) {
             width={44}
             domain={["auto", "auto"]}
           />
-          <Tooltip content={<CustomTooltip unit={active.unit} paramLabel={active.label} />} />
+          <Tooltip content={<CustomTooltip unit={active.unit} paramLabel={activeLabel} />} />
           <Line
             type="monotone"
             dataKey={param}

@@ -69,10 +69,3 @@ export function useApp() {
   if (!ctx) throw new Error("useApp must be used within AppProvider");
   return ctx;
 }
-
-export const STAGE_LABELS = {
-  seedling: "Seedling",
-  vegetative: "Vegetative",
-  flowering_fruiting: "Flowering / Fruiting",
-  harvest: "Harvest",
-};

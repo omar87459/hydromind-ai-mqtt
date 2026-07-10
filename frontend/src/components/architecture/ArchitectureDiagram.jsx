@@ -1,44 +1,23 @@
+import { useTranslation } from "react-i18next";
 import { Cpu, Server, Cloud, Satellite, Monitor, ArrowRight } from "lucide-react";
 
 const STAGES = [
-  {
-    icon: Cpu,
-    title: "Farm Sensors",
-    desc: "pH, EC, temperature, humidity, water level, and light sensors mounted throughout the grow system, plus actuators (pumps, dosing valves, fans, lights).",
-  },
-  {
-    icon: Server,
-    title: "Local Farm Server",
-    desc: "An on-site device that polls sensors, runs the AI Decision Engine locally, and drives automation — keeps the farm operating even if connectivity drops.",
-  },
-  {
-    icon: Cloud,
-    title: "AI Cloud Platform",
-    desc: "Aggregates data across farms, retrains and refines recommendation models, stores history, and powers the farmer dashboard and knowledge assistant.",
-  },
-  {
-    icon: Satellite,
-    title: "Satellite Communication Layer",
-    desc: "In remote regions without stable internet, critical alerts and summarized data are relayed via satellite link when the primary connection is unavailable.",
-  },
-  {
-    icon: Monitor,
-    title: "Farmer Dashboard",
-    desc: "The HydroMind AI web app — live monitoring, AI recommendations, and remote control, accessible from anywhere.",
-  },
+  { icon: Cpu, key: "sensors" },
+  { icon: Server, key: "server" },
+  { icon: Cloud, key: "cloud" },
+  { icon: Satellite, key: "satellite" },
+  { icon: Monitor, key: "dashboard" },
 ];
 
 export default function ArchitectureDiagram() {
+  const { t } = useTranslation();
   return (
     <div className="card">
-      <div
-        className="flex items-stretch wrap gap-8"
-        style={{ alignItems: "stretch" }}
-      >
+      <div className="flex items-stretch wrap gap-8" style={{ alignItems: "stretch" }}>
         {STAGES.map((stage, i) => {
           const Icon = stage.icon;
           return (
-            <div key={stage.title} className="flex items-center" style={{ flex: "1 1 180px" }}>
+            <div key={stage.key} className="flex items-center" style={{ flex: "1 1 180px" }}>
               <div
                 className="card"
                 style={{
@@ -63,17 +42,15 @@ export default function ArchitectureDiagram() {
                 >
                   <Icon size={20} />
                 </div>
-                <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 6 }}>{stage.title}</div>
+                <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 6 }}>
+                  {t(`architecture.stages.${stage.key}.title`)}
+                </div>
                 <div className="text-muted" style={{ fontSize: 11.5, lineHeight: 1.5 }}>
-                  {stage.desc}
+                  {t(`architecture.stages.${stage.key}.desc`)}
                 </div>
               </div>
               {i < STAGES.length - 1 && (
-                <ArrowRight
-                  size={18}
-                  color="var(--text-muted)"
-                  style={{ flexShrink: 0, margin: "0 4px" }}
-                />
+                <ArrowRight size={18} color="var(--text-muted)" className="rtl-flip" style={{ flexShrink: 0, margin: "0 4px" }} />
               )}
             </div>
           );

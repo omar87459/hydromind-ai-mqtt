@@ -70,3 +70,23 @@ export async function postRagAsk(question) {
   const { data } = await client.post("/rag/ask", { question });
   return data;
 }
+
+export async function fetchIotSensors() {
+  const { data } = await client.get("/iot/sensors");
+  return data;
+}
+
+export async function fetchIotNetworkStatus() {
+  const { data } = await client.get("/iot/network-status");
+  return data;
+}
+
+export async function fetchIotDiagnostics() {
+  const { data } = await client.get("/iot/diagnostics");
+  return data;
+}
+
+export async function postIotMode(mode) {
+  const { data } = await client.post("/iot/mode", { mode });
+  return data;
+}

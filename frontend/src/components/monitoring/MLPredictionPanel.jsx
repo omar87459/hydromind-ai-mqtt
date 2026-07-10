@@ -1,13 +1,15 @@
+import { useTranslation } from "react-i18next";
 import { Cpu, Sparkles } from "lucide-react";
 import StatusBadge from "../common/StatusBadge";
 
 export default function MLPredictionPanel({ prediction, loading, error }) {
+  const { t } = useTranslation();
   return (
     <div className="card">
       <div className="card-title-row">
         <h3 className="flex items-center gap-8">
           <Cpu size={16} />
-          ML Health Prediction
+          {t("monitoring.mlHealthPrediction")}
         </h3>
         {loading ? (
           <span className="spinner" />
@@ -26,7 +28,7 @@ export default function MLPredictionPanel({ prediction, loading, error }) {
         <>
           <div className="flex items-center justify-between mt-8">
             <span className="text-muted" style={{ fontSize: 12 }}>
-              Risk Score
+              {t("monitoring.riskScore")}
             </span>
             <span style={{ fontWeight: 700 }}>{prediction.risk_score}/100</span>
           </div>
@@ -46,24 +48,24 @@ export default function MLPredictionPanel({ prediction, loading, error }) {
           </div>
 
           <div className="kv-row mt-16">
-            <span className="kv-label">Detected problem</span>
+            <span className="kv-label">{t("monitoring.detectedProblem")}</span>
           </div>
           <p style={{ fontSize: 12.5, margin: "0 0 10px", fontWeight: 600 }}>
-            {prediction.detected_problem || "None"}
+            {prediction.detected_problem || t("common.none")}
           </p>
 
           <div className="kv-row">
-            <span className="kv-label">Recommended action</span>
+            <span className="kv-label">{t("monitoring.recommendedAction")}</span>
           </div>
           <p style={{ fontSize: 12.5, margin: "0 0 10px" }}>{prediction.recommended_action}</p>
 
           <div className="flex items-center gap-8 mt-8" style={{ fontSize: 11.5 }}>
             <Sparkles size={12} color="var(--brand-blue)" />
             <span className="text-muted">
-              Confidence {Math.round(prediction.confidence_score * 100)}%
+              {t("common.confidence")} {Math.round(prediction.confidence_score * 100)}%
               {prediction.is_safety_override && (
-                <span className="badge badge-critical" style={{ marginLeft: 6 }}>
-                  Safety Override
+                <span className="badge badge-critical" style={{ marginInlineStart: 6 }}>
+                  {t("monitoring.safetyOverride")}
                 </span>
               )}
             </span>

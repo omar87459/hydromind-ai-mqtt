@@ -41,6 +41,17 @@ structure designed for a straightforward swap to a real database later.
     training status, last-trained date, and test-set accuracy for both
     models, plus a live "try it" panel to run predictions against custom
     sensor values.
+11. **Bilingual (English/Arabic)** — a language switcher in the top bar
+    translates the entire UI and flips the layout RTL/LTR, keeping
+    scientific abbreviations (pH, EC, DWC, NFT, IoT) and units unchanged.
+    See "Bilingual Support" below.
+12. **Sensor Connectivity** — a live device-fleet dashboard: 7 sensor cards
+    (ID, reading, battery, signal, connection status, health) refreshing
+    every 2-3s, plus an AI Sensor Diagnostics panel flagging low battery,
+    weak signal, stale data, and calibration drift.
+13. **Farm Network** — a live version of the architecture pipeline (Sensors
+    → ESP32 → Gateway → Internet/Satellite → Cloud → Dashboard), each node
+    showing real-time connection status.
 
 ## Project structure
 
@@ -53,8 +64,9 @@ hydromind-ai/
 │   │   ├── data_store.py      Data access layer — local JSON or Supabase (see below)
 │   │   ├── supabase_client.py Lazy Supabase client, used only if configured
 │   │   ├── models.py          Pydantic request/response schemas
-│   │   ├── routers/           crops, methods, sensors, analyze, assistant, ml, rag
-│   │   └── services/          ai_decision_engine, sensor_simulator, knowledge_assistant
+│   │   ├── routers/           crops, methods, sensors, analyze, assistant, ml, rag, iot
+│   │   └── services/          ai_decision_engine, sensor_simulator, knowledge_assistant,
+│   │                          iot_registry, iot_diagnostics
 │   ├── data/                  crops.json, methods.json, knowledge_base.json
 │   ├── supabase_setup/         schema.sql + seed.py for the Supabase migration
 │   ├── ml_engine/              synthetic dataset generator, training script,
@@ -65,11 +77,14 @@ hydromind-ai/
 └── frontend/                  React + Vite app
     ├── vercel.json             SPA rewrite config (Vercel deployment)
     └── src/
-        ├── api/                axios client + endpoint wrappers
-        ├── context/            AppContext (shared crop/method/stage selection)
-        ├── pages/               one file per section, incl. ModelLabPage
-        └── components/          layout, crops, methods, growth, monitoring,
-                                  automation, assistant, architecture
+        ├── i18n/                en.json, ar.json, index.js (i18next setup)
+        ├── api/                 axios client + endpoint wrappers
+        ├── context/             AppContext (shared crop/method/stage selection)
+        ├── pages/                one file per section, incl. ModelLabPage,
+        │                         SensorConnectivityPage, FarmConnectivityPage
+        └── components/           layout (incl. LanguageSwitcher), crops, methods,
+                                   growth, monitoring, automation, assistant,
+                                   architecture, sensors
 ```
 
 ## Backend setup
@@ -105,6 +120,11 @@ The API will be live at `http://localhost:8000`, with interactive docs at
 | POST | `/ml/predict-risk` | Predicts a 0-100 risk score from a raw sensor reading (RandomForestRegressor) |
 | POST | `/ml/recommend-action` | Full ML bundle: health status, risk score, detected problem, recommended action, confidence, explanation |
 | POST | `/rag/ask` | Ask a hydroponics question, answered via TF-IDF retrieval over `knowledge_base/*.md` with sources |
+| GET | `/iot/sensors` | Live status for all 7 sensor devices (reading, battery, signal, connection, health) |
+| GET | `/iot/network-status` | Live status for the 6 farm-network pipeline nodes |
+| GET | `/iot/diagnostics` | AI-generated diagnostics over current sensor health |
+| GET/POST | `/iot/mode` | Get/set `simulation` or `live` data mode |
+| POST | `/iot/sensors/{sensor_id}/reading` | Real-hardware integration point — a real ESP32 posts a reading here (see "IoT Hardware Integration" below) |
 
 ## Frontend setup
 
@@ -177,6 +197,60 @@ sections — no restart needed beyond the next server reload.
 curl -X POST http://localhost:8000/rag/ask \
   -H "Content-Type: application/json" \
   -d '{"question": "Why is pH important?"}'
+```
+
+## Bilingual Support (English/Arabic)
+
+Translations live in `frontend/src/i18n/en.json` and `ar.json`, loaded by
+`frontend/src/i18n/index.js` (i18next + react-i18next). The language
+switcher in the top bar calls `setLanguage()`, which persists the choice to
+`localStorage` and sets `document.documentElement.dir`/`lang` — the CSS
+layout (sidebar position, borders, a handful of directional arrow icons)
+flips via `[dir="rtl"]` selectors in `frontend/src/index.css`.
+
+**Translation scope**: all frontend UI chrome (nav, headings, buttons, card
+labels, status badges) is translated in both languages, and the 5 crop / 6
+method names have an Arabic lookup table (`common.cropNames` /
+`common.methodNames` in the JSON files). What's **not** translated:
+dynamically generated backend text — the AI Decision Engine's
+problem/recommended-action sentences, ML explanation text, and RAG
+assistant answers are all generated server-side in English with
+interpolated numbers. Fully localizing those would mean duplicating content
+generation in Arabic or adding a live translation call, both out of scope
+for this offline prototype — you'll see English sentences mixed into an
+otherwise-Arabic UI in the Monitoring and Model Lab pages by design.
+
+To add a new UI string: add the key to both `en.json` and `ar.json` under
+the relevant namespace, then reference it with `t('namespace.key')` (or
+`<Trans i18nKey="...">` for text containing inline formatting).
+
+## IoT Hardware Integration
+
+The Sensor Connectivity and Farm Network pages are simulated by default
+(`backend/app/services/iot_registry.py`), but the backend is already
+structured for real ESP32 (or any REST-capable) hardware to plug in without
+any frontend changes:
+
+- **`POST /iot/sensors/{sensor_id}/reading`** is the integration point. A
+  real device posts `{"value": 6.1, "battery_level": 88, "signal_strength": 95}`
+  (unit optional) to update the exact same in-memory record that
+  `GET /iot/sensors` reads — `sensor_id` is one of `ph`, `ec`, `water_temp`,
+  `air_temp`, `humidity`, `water_level`, `light_intensity`.
+- **`POST /iot/mode`** with `{"mode": "live"}` switches the whole fleet out
+  of simulation. In live mode, any sensor that hasn't received a real POST
+  yet is shown honestly as offline rather than continuing to display
+  fabricated numbers — see the honesty behavior in
+  `iot_registry.get_sensors()`.
+- **MQTT** (mentioned in the original spec) is not implemented — the
+  intended path is a small bridge service that subscribes to your MQTT
+  broker and forwards each message to the REST endpoint above, so the
+  FastAPI app itself never needs an MQTT client.
+
+```bash
+curl -X POST http://localhost:8000/iot/mode -H "Content-Type: application/json" -d '{"mode": "live"}'
+curl -X POST http://localhost:8000/iot/sensors/ph/reading \
+  -H "Content-Type: application/json" \
+  -d '{"value": 6.1, "battery_level": 88, "signal_strength": 95}'
 ```
 
 ## Cloud Deployment (Vercel + Render)
@@ -283,6 +357,10 @@ from Supabase instead, with zero code changes anywhere else.
   hand-written markdown corpus and extractive (non-LLM) answer generation —
   see the docstrings in `backend/rag_engine/` for what a production version
   (embeddings + vector DB + LLM synthesis) would swap in.
+- The Sensor Connectivity and Farm Network pages simulate device fleet state
+  (`backend/app/services/iot_registry.py`) — no real ESP32 hardware is
+  connected, though the REST endpoint for one is real and tested (see "IoT
+  Hardware Integration" above).
 - The satellite/cloud architecture (System Architecture page) is a conceptual
   diagram only; no satellite or cloud integration is implemented.
 
@@ -291,14 +369,17 @@ from Supabase instead, with zero code changes anywhere else.
 The following were scoped in planning but are not built in this pass —
 noted here so the next iteration has a clear starting brief:
 
-- **Bilingual support (English/Arabic)** — a language switcher with full
-  UI translation and RTL/LTR layout switching, driven by `src/i18n/en.json`
-  and `src/i18n/ar.json`, keeping numbers/units/scientific terms (pH, EC,
-  DWC, NFT) unchanged across languages.
 - **User authentication** — Admin / Farm Owner / Viewer roles, with Farm
   Owners scoped to their own farms, and a multi-farm data model (Farm Name,
   ID, Location, Method, Sensors, Crop Database, AI Dashboard per farm).
-- **Satellite Monitoring Dashboard** — a map-based page showing all
-  registered farms with health score, active crop, sensor status, AI
-  alerts, water consumption, and connectivity status per farm (conceptual
-  visualization, not real satellite integration).
+- **Satellite Monitoring Dashboard** — a map-based page showing *all
+  registered farms* (multi-farm) with health score, active crop, sensor
+  status, AI alerts, water consumption, and connectivity status per farm
+  (conceptual visualization, not real satellite integration). Different
+  from the single-farm Sensor Connectivity / Farm Network pages already
+  built — this would be the multi-farm fleet-management view on top of
+  them, gated on the multi-farm data model above.
+- **MQTT bridge** — a small service translating MQTT sensor messages into
+  calls to the existing `POST /iot/sensors/{sensor_id}/reading` endpoint
+  (see "IoT Hardware Integration" above) — the REST integration point
+  already exists, just not an MQTT listener in front of it.

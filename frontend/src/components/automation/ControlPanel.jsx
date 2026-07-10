@@ -1,17 +1,26 @@
+import { useTranslation } from "react-i18next";
 import { Sparkles } from "lucide-react";
 import { DEVICES } from "../../utils/automation";
 
 export default function ControlPanel({ deviceStates, onToggle, suggestions }) {
+  const { t } = useTranslation();
+
   return (
     <div className="card">
       <div className="card-title-row">
-        <h3>Automation Control Panel</h3>
+        <h3>{t("monitoring.automationPanel")}</h3>
       </div>
       <div className="flex flex-col gap-12">
         {DEVICES.map((device) => {
           const isOn = deviceStates[device.key];
           const suggestion = suggestions[device.key];
           const mismatched = suggestion && suggestion.on !== isOn;
+          const deviceLabel = t(`monitoring.devices.${device.key}`);
+          const reason = suggestion
+            ? suggestion.reasonKey
+              ? t(`monitoring.reasons.${suggestion.reasonKey}`)
+              : suggestion.reasonText
+            : null;
           return (
             <div
               key={device.key}
@@ -25,18 +34,19 @@ export default function ControlPanel({ deviceStates, onToggle, suggestions }) {
               <div style={{ minWidth: 0 }}>
                 <div className="flex items-center gap-8">
                   <span style={{ fontSize: 17 }}>{device.icon}</span>
-                  <span style={{ fontWeight: 600, fontSize: 13.5 }}>{device.label}</span>
+                  <span style={{ fontWeight: 600, fontSize: 13.5 }}>{deviceLabel}</span>
                   <span className={`badge ${isOn ? "badge-good" : "badge-neutral"}`}>
-                    {isOn ? "ON" : "OFF"}
+                    {isOn ? t("common.on") : t("common.off")}
                   </span>
                 </div>
                 {suggestion && (
                   <div className="flex items-center gap-6 mt-8" style={{ fontSize: 11.5 }}>
                     <Sparkles size={12} color="var(--brand-blue)" />
                     <span className="text-muted">
-                      AI suggests <strong style={{ color: "var(--brand-blue)" }}>{suggestion.on ? "ON" : "OFF"}</strong>
-                      {" — "}
-                      {suggestion.reason}
+                      {t("monitoring.aiSuggests", {
+                        state: suggestion.on ? t("common.on") : t("common.off"),
+                        reason,
+                      })}
                     </span>
                     {mismatched && (
                       <button
@@ -44,7 +54,7 @@ export default function ControlPanel({ deviceStates, onToggle, suggestions }) {
                         style={{ padding: "2px 8px", fontSize: 10.5 }}
                         onClick={() => onToggle(device.key, suggestion.on)}
                       >
-                        Apply
+                        {t("common.apply")}
                       </button>
                     )}
                   </div>
@@ -53,8 +63,8 @@ export default function ControlPanel({ deviceStates, onToggle, suggestions }) {
               <button
                 className={`toggle ${isOn ? "on" : ""}`}
                 onClick={() => onToggle(device.key, !isOn)}
-                aria-label={`Toggle ${device.label}`}
-                style={{ marginLeft: 12 }}
+                aria-label={t("monitoring.toggleDevice", { device: deviceLabel })}
+                style={{ marginInlineStart: 12 }}
               />
             </div>
           );

@@ -1,5 +1,6 @@
+import { useTranslation } from "react-i18next";
 import { Sparkles, FlaskConical, Zap, Sun, Thermometer, Droplet } from "lucide-react";
-import { useApp, STAGE_LABELS } from "../context/AppContext";
+import { useApp } from "../context/AppContext";
 import { LoadingBlock, ErrorBlock } from "../components/common/AsyncState";
 import StageTimeline from "../components/growth/StageTimeline";
 
@@ -16,6 +17,7 @@ function TargetTile({ icon: Icon, label, value }) {
 }
 
 export default function GrowthStagesPage() {
+  const { t } = useTranslation();
   const {
     crops,
     loading,
@@ -28,18 +30,16 @@ export default function GrowthStagesPage() {
     setSelectedStage,
   } = useApp();
 
-  if (loading) return <LoadingBlock label="Loading growth stage data..." />;
+  if (loading) return <LoadingBlock label={t("common.loading")} />;
   if (loadError) return <ErrorBlock message={loadError} />;
   if (!selectedCrop) return null;
 
   const stageData = selectedCrop.stages[selectedStage];
+  const cropName = t(`common.cropNames.${selectedCrop.id}`, selectedCrop.name);
 
   return (
     <div>
-      <p className="section-sub">
-        Pick a crop and move through its lifecycle — targets and AI guidance update
-        automatically for each stage.
-      </p>
+      <p className="section-sub">{t("growth.intro")}</p>
 
       <div className="flex items-center gap-8 wrap mt-8" style={{ marginBottom: 20 }}>
         {crops.map((c) => (
@@ -53,7 +53,7 @@ export default function GrowthStagesPage() {
             }
             onClick={() => setSelectedCropId(c.id)}
           >
-            {c.icon} {c.name}
+            {c.icon} {t(`common.cropNames.${c.id}`, c.name)}
           </button>
         ))}
       </div>
@@ -65,28 +65,32 @@ export default function GrowthStagesPage() {
       <div className="mt-24">
         <div className="card-title-row">
           <h3>
-            {selectedCrop.icon} {selectedCrop.name} — {STAGE_LABELS[selectedStage]} Targets
+            {t("growth.targetsTitle", {
+              icon: selectedCrop.icon,
+              name: cropName,
+              stage: t(`common.stages.${selectedStage}`),
+            })}
           </h3>
         </div>
         <div className="grid grid-cols-4">
           <TargetTile
             icon={FlaskConical}
-            label="pH Target"
+            label={t("growth.phTarget")}
             value={`${stageData.ph.min}–${stageData.ph.max}`}
           />
           <TargetTile
             icon={Zap}
-            label="EC Target"
+            label={t("growth.ecTarget")}
             value={`${stageData.ec.min}–${stageData.ec.max} mS/cm`}
           />
           <TargetTile
             icon={Sun}
-            label="Lighting"
+            label={t("growth.lighting")}
             value={`${stageData.light_hours}h · ${stageData.light_intensity.min}-${stageData.light_intensity.max}`}
           />
           <TargetTile
             icon={Thermometer}
-            label="Air / Water Temp"
+            label={t("growth.airWaterTemp")}
             value={`${stageData.air_temp.min}-${stageData.air_temp.max}°C / ${stageData.water_temp.min}-${stageData.water_temp.max}°C`}
           />
         </div>
@@ -95,7 +99,7 @@ export default function GrowthStagesPage() {
       <div className="card mt-16" style={{ borderColor: "var(--brand-blue)" }}>
         <div className="flex items-center gap-8" style={{ color: "var(--brand-blue)", fontWeight: 700, fontSize: 13.5 }}>
           <Sparkles size={16} />
-          AI Notes for this stage
+          {t("growth.aiNotesTitle")}
         </div>
         <p className="mt-8" style={{ fontSize: 13.5, lineHeight: 1.6, margin: "8px 0 0" }}>
           {stageData.ai_notes}

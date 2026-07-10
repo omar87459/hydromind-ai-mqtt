@@ -1,20 +1,20 @@
+import { useTranslation } from "react-i18next";
 import { useApp } from "../context/AppContext";
 import { LoadingBlock, ErrorBlock } from "../components/common/AsyncState";
 import MethodCard from "../components/methods/MethodCard";
 import MethodDetail from "../components/methods/MethodDetail";
 
 export default function MethodsPage() {
+  const { t } = useTranslation();
   const { methods, loading, loadError, selectedMethod, selectedMethodId, setSelectedMethodId } =
     useApp();
 
-  if (loading) return <LoadingBlock label="Loading hydroponic methods..." />;
+  if (loading) return <LoadingBlock label={t("common.loading")} />;
   if (loadError) return <ErrorBlock message={loadError} />;
 
   return (
     <div>
-      <p className="section-sub">
-        Select a method first — HydroMind AI will recommend crops that are compatible with it.
-      </p>
+      <p className="section-sub">{t("methods.intro")}</p>
 
       <div className="grid grid-cols-3">
         {methods.map((method) => (

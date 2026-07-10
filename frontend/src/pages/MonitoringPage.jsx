@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { useApp, STAGE_LABELS } from "../context/AppContext";
+import { useTranslation } from "react-i18next";
+import { useApp } from "../context/AppContext";
 import { fetchSensorData, postAnalyze, postRecommendAction } from "../api";
 import { LoadingBlock, ErrorBlock } from "../components/common/AsyncState";
 import SensorGrid from "../components/monitoring/SensorGrid";
@@ -21,6 +22,7 @@ const DEFAULT_DEVICE_STATES = {
 };
 
 export default function MonitoringPage() {
+  const { t } = useTranslation();
   const { crops, loading, loadError, stages, selectedCropId, setSelectedCropId, selectedStage, setSelectedStage } =
     useApp();
 
@@ -126,7 +128,7 @@ export default function MonitoringPage() {
     };
   }, [selectedCropId, selectedStage, crops]);
 
-  if (loading) return <LoadingBlock label="Loading monitoring dashboard..." />;
+  if (loading) return <LoadingBlock label={t("common.loading")} />;
   if (loadError) return <ErrorBlock message={loadError} />;
 
   const statusMapForGrid = { ...statuses };
@@ -135,8 +137,10 @@ export default function MonitoringPage() {
   return (
     <div>
       <p className="section-sub">
-        Simulated IoT sensors refresh every {POLL_INTERVAL_MS / 1000}s and are compared against{" "}
-        {STAGE_LABELS[selectedStage]} targets for the selected crop.
+        {t("monitoring.intro", {
+          seconds: POLL_INTERVAL_MS / 1000,
+          stage: t(`common.stages.${selectedStage}`),
+        })}
       </p>
 
       <div className="card flex items-center justify-between wrap gap-16" style={{ marginBottom: 20 }}>
@@ -152,7 +156,7 @@ export default function MonitoringPage() {
               }
               onClick={() => setSelectedCropId(c.id)}
             >
-              {c.icon} {c.name}
+              {c.icon} {t(`common.cropNames.${c.id}`, c.name)}
             </button>
           ))}
         </div>
@@ -163,7 +167,7 @@ export default function MonitoringPage() {
         >
           {stages.map((s) => (
             <option key={s} value={s}>
-              {STAGE_LABELS[s]}
+              {t(`common.stages.${s}`)}
             </option>
           ))}
         </select>

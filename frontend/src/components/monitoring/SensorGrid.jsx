@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { FlaskConical, Zap, Thermometer, Wind, Droplet, Waves, Sun } from "lucide-react";
 import StatusBadge from "../common/StatusBadge";
 
@@ -11,16 +12,6 @@ const PARAM_ICON = {
   light_intensity: Sun,
 };
 
-const PARAM_LABEL = {
-  ph: "pH",
-  ec: "EC",
-  water_temp: "Water Temp",
-  air_temp: "Air Temp",
-  humidity: "Humidity",
-  water_level: "Water Level",
-  light_intensity: "Light Intensity",
-};
-
 const PARAM_UNIT = {
   ph: "",
   ec: " mS/cm",
@@ -32,6 +23,7 @@ const PARAM_UNIT = {
 };
 
 export default function SensorGrid({ reading, statusByParam }) {
+  const { t } = useTranslation();
   const order = ["ph", "ec", "water_temp", "air_temp", "humidity", "water_level", "light_intensity"];
 
   return (
@@ -45,7 +37,7 @@ export default function SensorGrid({ reading, statusByParam }) {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-8 text-muted" style={{ fontSize: 12 }}>
                 <Icon size={15} />
-                {PARAM_LABEL[param]}
+                {t(`monitoring.params.${param}`)}
               </div>
               {status && <StatusBadge status={status} small />}
             </div>

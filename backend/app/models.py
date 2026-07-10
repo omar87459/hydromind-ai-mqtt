@@ -124,3 +124,16 @@ class RagAskResponse(BaseModel):
     answer: str
     sources: List[RagSource]
     confidence: float
+
+
+class IoTReadingRequest(BaseModel):
+    """Body a real ESP32 (or the demo POST) sends to report one sensor reading."""
+
+    value: float
+    unit: Optional[str] = None
+    battery_level: Optional[float] = None
+    signal_strength: Optional[float] = None
+
+
+class IoTModeRequest(BaseModel):
+    mode: str  # "simulation" | "live"

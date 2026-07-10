@@ -1,13 +1,15 @@
+import { useTranslation } from "react-i18next";
 import { Bot, ShieldCheck, Zap } from "lucide-react";
 import StatusBadge from "../common/StatusBadge";
 
 export default function IssuesPanel({ issues, overallStatus, analyzing }) {
+  const { t } = useTranslation();
   return (
     <div className="card">
       <div className="card-title-row">
         <h3 className="flex items-center gap-8">
           <Bot size={16} />
-          AI Decision Engine
+          {t("monitoring.aiDecisionEngine")}
         </h3>
         {analyzing ? <span className="spinner" /> : <StatusBadge status={overallStatus} />}
       </div>
@@ -15,7 +17,7 @@ export default function IssuesPanel({ issues, overallStatus, analyzing }) {
       {(!issues || issues.length === 0) && !analyzing && (
         <div className="flex items-center gap-8 text-secondary" style={{ fontSize: 13, padding: "8px 0" }}>
           <ShieldCheck size={16} color="var(--status-good)" />
-          All monitored parameters are within the ideal range for the current growth stage.
+          {t("monitoring.allIdeal")}
         </div>
       )}
 
@@ -34,7 +36,7 @@ export default function IssuesPanel({ issues, overallStatus, analyzing }) {
               <StatusBadge status={issue.severity} small />
               <span className="badge badge-neutral">
                 <Zap size={11} />
-                {Math.round(issue.confidence_score * 100)}% confidence
+                {t("monitoring.confidencePct", { pct: Math.round(issue.confidence_score * 100) })}
               </span>
             </div>
             <p style={{ fontSize: 13, fontWeight: 600, margin: "10px 0 4px" }}>
@@ -55,7 +57,7 @@ export default function IssuesPanel({ issues, overallStatus, analyzing }) {
                 padding: "6px 10px",
               }}
             >
-              ⚙ Automatic action: {issue.automatic_action_suggestion}
+              {t("monitoring.automaticAction", { action: issue.automatic_action_suggestion })}
             </div>
           </div>
         ))}

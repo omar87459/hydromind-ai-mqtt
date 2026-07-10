@@ -1,4 +1,5 @@
 import { NavLink } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   LayoutDashboard,
   Sprout,
@@ -8,40 +9,46 @@ import {
   MessageCircle,
   Satellite,
   FlaskConical,
+  Radio,
+  Network,
   X,
 } from "lucide-react";
 
 const NAV_ITEMS = [
-  { to: "/", label: "Overview", icon: LayoutDashboard, end: true },
-  { to: "/crops", label: "Crop Database", icon: Sprout },
-  { to: "/methods", label: "Hydroponic Methods", icon: Droplets },
-  { to: "/growth", label: "Growth Stages", icon: TrendingUp },
-  { to: "/monitoring", label: "Live Monitoring", icon: Activity },
-  { to: "/assistant", label: "AI Knowledge Assistant", icon: MessageCircle },
-  { to: "/model-lab", label: "AI Model Lab", icon: FlaskConical },
-  { to: "/architecture", label: "System Architecture", icon: Satellite },
+  { to: "/", key: "overview", icon: LayoutDashboard, end: true },
+  { to: "/crops", key: "crops", icon: Sprout },
+  { to: "/methods", key: "methods", icon: Droplets },
+  { to: "/growth", key: "growth", icon: TrendingUp },
+  { to: "/monitoring", key: "monitoring", icon: Activity },
+  { to: "/assistant", key: "assistant", icon: MessageCircle },
+  { to: "/model-lab", key: "modelLab", icon: FlaskConical },
+  { to: "/sensors", key: "sensors", icon: Radio },
+  { to: "/farm-network", key: "farmNetwork", icon: Network },
+  { to: "/architecture", key: "architecture", icon: Satellite },
 ];
 
 export default function Sidebar({ open, onClose }) {
+  const { t } = useTranslation();
+
   return (
     <aside className={`sidebar ${open ? "open" : ""}`}>
       <div className="sidebar-brand">
         <div className="sidebar-brand-mark">🌱</div>
         <div className="sidebar-brand-text">
-          <div className="name">HydroMind AI</div>
-          <div className="tag">Smart Hydroponic Platform</div>
+          <div className="name">{t("nav.brandName")}</div>
+          <div className="tag">{t("nav.brandTag")}</div>
         </div>
         <button
           className="menu-toggle btn btn-sm"
-          style={{ marginLeft: "auto" }}
+          style={{ marginInlineStart: "auto" }}
           onClick={onClose}
-          aria-label="Close menu"
+          aria-label={t("nav.closeMenu")}
         >
           <X size={16} />
         </button>
       </div>
       <nav className="sidebar-nav">
-        {NAV_ITEMS.map(({ to, label, icon: Icon, end }) => (
+        {NAV_ITEMS.map(({ to, key, icon: Icon, end }) => (
           <NavLink
             key={to}
             to={to}
@@ -50,14 +57,14 @@ export default function Sidebar({ open, onClose }) {
             className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`}
           >
             <Icon className="icon" size={16} />
-            {label}
+            {t(`nav.${key}`)}
           </NavLink>
         ))}
       </nav>
       <div className="sidebar-footer">
-        HydroMind AI · Hackathon Prototype
+        {t("nav.footerLine1")}
         <br />
-        v0.1.0 — local dataset
+        {t("nav.footerLine2")}
       </div>
     </aside>
   );

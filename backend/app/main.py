@@ -3,7 +3,7 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .routers import analyze, assistant, crops, iot, methods, ml, rag, sensors
+from .routers import analyze, assistant, crops, energy, iot, methods, ml, rag, sensors
 
 app = FastAPI(
     title="HydroMind AI API",
@@ -41,6 +41,7 @@ app.include_router(assistant.router)
 app.include_router(ml.router)
 app.include_router(rag.router)
 app.include_router(iot.router)
+app.include_router(energy.router)
 
 
 @app.get("/", tags=["Health"])

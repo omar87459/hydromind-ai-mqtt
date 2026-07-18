@@ -90,3 +90,85 @@ export async function postIotMode(mode) {
   const { data } = await client.post("/iot/mode", { mode });
   return data;
 }
+
+export async function fetchEnergyLive() {
+  const { data } = await client.get("/energy/live");
+  return data;
+}
+
+export async function fetchEnergyDevices() {
+  const { data } = await client.get("/energy/devices");
+  return data;
+}
+
+export async function postEnergyDeviceControl(deviceId, payload) {
+  const { data } = await client.post(`/energy/devices/${deviceId}/control`, payload);
+  return data;
+}
+
+export async function fetchEnergyMode() {
+  const { data } = await client.get("/energy/mode");
+  return data;
+}
+
+export async function postEnergyMode(mode) {
+  const { data } = await client.post("/energy/mode", { mode });
+  return data;
+}
+
+export async function fetchEnergyRecommendations(cropId, stage) {
+  const { data } = await client.get("/energy/recommendations", {
+    params: { crop_id: cropId, stage },
+  });
+  return data;
+}
+
+export async function fetchEnergySummary() {
+  const { data } = await client.get("/energy/summary");
+  return data;
+}
+
+export async function fetchEnergyHistory(granularity, start, end) {
+  const { data } = await client.get("/energy/history", { params: { granularity, start, end } });
+  return data;
+}
+
+export async function fetchEnergyDeviceComparison(start, end) {
+  const { data } = await client.get("/energy/history/devices", { params: { start, end } });
+  return data;
+}
+
+export async function fetchEnergyPeakHours(date) {
+  const { data } = await client.get("/energy/history/peak-hours", { params: { date } });
+  return data;
+}
+
+export async function fetchEnergyPredictions(growthStage) {
+  const { data } = await client.get("/energy/predictions", { params: { growth_stage: growthStage } });
+  return data;
+}
+
+export async function fetchEnergyModelInfo() {
+  const { data } = await client.get("/energy/model-info");
+  return data;
+}
+
+export async function fetchEnergyAlerts() {
+  const { data } = await client.get("/energy/alerts");
+  return data;
+}
+
+export async function downloadEnergyReport(reportType, format) {
+  const response = await client.get(`/energy/reports/${reportType}`, {
+    params: { format },
+    responseType: "blob",
+  });
+  const blobUrl = URL.createObjectURL(response.data);
+  const link = document.createElement("a");
+  link.href = blobUrl;
+  link.download = `hydromind-${reportType}-report.${format}`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(blobUrl);
+}

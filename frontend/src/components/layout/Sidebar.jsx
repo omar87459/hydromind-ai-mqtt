@@ -11,6 +11,7 @@ import {
   FlaskConical,
   Radio,
   Network,
+  Zap,
   X,
 } from "lucide-react";
 
@@ -24,6 +25,7 @@ const NAV_ITEMS = [
   { to: "/model-lab", key: "modelLab", icon: FlaskConical },
   { to: "/sensors", key: "sensors", icon: Radio },
   { to: "/farm-network", key: "farmNetwork", icon: Network },
+  { to: "/energy", key: "energy", icon: Zap },
   { to: "/architecture", key: "architecture", icon: Satellite },
 ];
 

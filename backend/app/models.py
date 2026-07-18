@@ -137,3 +137,20 @@ class IoTReadingRequest(BaseModel):
 
 class IoTModeRequest(BaseModel):
     mode: str  # "simulation" | "live"
+
+
+class EnergyDeviceControlRequest(BaseModel):
+    is_on: Optional[bool] = None
+    brightness_pct: Optional[float] = None
+
+
+class EnergyModeRequest(BaseModel):
+    mode: str  # "auto" | "manual"
+
+
+class EnergyPredictionRequest(BaseModel):
+    day_of_week: int = 0  # 0=Monday
+    month: int = 1
+    growth_stage: str = "vegetative"
+    active_devices_fraction: float = 1.0
+    outdoor_temp_proxy: float = 30.0

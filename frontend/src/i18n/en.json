@@ -61,6 +61,7 @@
     "modelLab": "AI Model Lab",
     "sensors": "Sensor Connectivity",
     "farmNetwork": "Farm Network",
+    "energy": "Energy Dashboard",
     "architecture": "System Architecture",
     "footerLine1": "HydroMind AI · Hackathon Prototype",
     "footerLine2": "v0.1.0 — local dataset",
@@ -87,7 +88,9 @@
     "sensorsTitle": "Sensor Connectivity",
     "sensorsSubtitle": "Live device status for every connected hydroponic sensor.",
     "farmNetworkTitle": "Farm Connectivity Overview",
-    "farmNetworkSubtitle": "Live status of the full sensor-to-cloud pipeline."
+    "farmNetworkSubtitle": "Live status of the full sensor-to-cloud pipeline.",
+    "energyTitle": "Energy Dashboard",
+    "energySubtitle": "Real-time power monitoring, AI-driven optimization, and energy savings."
   },
   "overview": {
     "badge": "AI-Powered Smart Agriculture",
@@ -329,6 +332,127 @@
       "internet": { "title": "Internet / Satellite", "desc": "Primary connection to the cloud, with satellite as a remote-area fallback." },
       "cloud": { "title": "HydroMind AI Cloud", "desc": "Runs the AI Decision Engine, ML models, and RAG assistant, and serves the dashboard." },
       "dashboard": { "title": "Farmer Dashboard", "desc": "This web app — live monitoring and control, accessible from anywhere." }
+    }
+  },
+  "energy": {
+    "deviceNames": {
+      "main_pump": "Main Water Pump",
+      "nutrient_pump": "Nutrient Pump",
+      "air_pump": "Air Pump",
+      "led_lights": "LED Grow Lights",
+      "cooling_fan": "Cooling Fan",
+      "water_chiller": "Water Chiller",
+      "optional_device": "Optional Device"
+    },
+    "status": {
+      "Normal": "Normal",
+      "Warning": "Warning",
+      "Critical": "Critical"
+    },
+    "liveMetrics": {
+      "title": "Real-Time Energy Monitoring",
+      "voltage": "Voltage",
+      "current": "Current",
+      "power": "Power",
+      "energy": "Energy Consumption",
+      "frequency": "Frequency",
+      "powerFactor": "Power Factor",
+      "systemStatus": "System Status"
+    },
+    "devices": {
+      "title": "Device Energy Consumption",
+      "currentPower": "Current Power",
+      "dailyEnergy": "Daily Energy",
+      "monthlyEnergy": "Monthly Energy",
+      "runningTime": "Running Time",
+      "on": "ON",
+      "off": "OFF"
+    },
+    "optimization": {
+      "title": "AI Energy Optimization",
+      "intro": "The AI continuously analyzes sensor data and energy usage to find savings.",
+      "expectedSaving": "Expected Energy Saving",
+      "costSaving": "Estimated Cost Saving",
+      "confidence": "AI Confidence Level",
+      "empty": "No optimization recommendations right now — the system is running efficiently.",
+      "perDay": "/day"
+    },
+    "summary": {
+      "title": "Energy Saving Summary",
+      "todaySaved": "Today's Energy Saved",
+      "monthlySaved": "Monthly Energy Saved",
+      "annualSaved": "Annual Energy Saved",
+      "costSaved": "Estimated Electricity Cost Saved",
+      "co2Reduced": "Estimated CO₂ Emissions Reduced",
+      "efficiencyScore": "Efficiency Score"
+    },
+    "history": {
+      "title": "Historical Analytics",
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly",
+      "deviceComparison": "Device Comparison",
+      "peakHours": "Peak Hours",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "apply": "Apply",
+      "totalEnergy": "Total Energy",
+      "totalCost": "Total Cost"
+    },
+    "predictions": {
+      "title": "AI Prediction",
+      "intro": "A trained machine learning model forecasts upcoming consumption from historical patterns.",
+      "nextDay": "Tomorrow's Predicted Usage",
+      "nextWeek": "Next Week's Predicted Usage",
+      "anomaliesTitle": "Abnormal Consumption",
+      "equipmentRiskTitle": "Equipment Risk",
+      "noAnomalies": "No abnormal consumption detected.",
+      "noEquipmentRisk": "No equipment risk detected.",
+      "confidence": "Prediction Confidence"
+    },
+    "growthStage": {
+      "title": "Growth Stage Energy Optimization",
+      "intro": "The AI automatically adjusts lighting, pumps, cooling, and ventilation to match each growth stage's real needs, minimizing energy use while keeping growth on target.",
+      "lightingHours": "Lighting Hours",
+      "pumpSchedule": "Pump Schedule",
+      "cooling": "Cooling",
+      "ventilation": "Ventilation",
+      "currentStageTarget": "Current stage target"
+    },
+    "alerts": {
+      "title": "Smart Alerts",
+      "empty": "No active alerts — everything is operating normally.",
+      "equipmentRisksTitle": "Equipment Risks"
+    },
+    "connectivity": {
+      "title": "Satellite & IoT Status"
+    },
+    "reports": {
+      "title": "Reports",
+      "intro": "Generate downloadable reports for any period.",
+      "daily": "Daily Energy Report",
+      "weekly": "Weekly Report",
+      "monthly": "Monthly Report",
+      "cost": "Cost Analysis",
+      "efficiency": "Energy Efficiency Report",
+      "downloadPdf": "Download PDF",
+      "downloadExcel": "Download Excel",
+      "generating": "Generating…"
+    },
+    "controls": {
+      "title": "Smart Controls",
+      "aiAutoMode": "AI Auto Mode",
+      "manualOverride": "Manual Override",
+      "brightness": "LED Brightness"
+    },
+    "stats": {
+      "title": "Dashboard Statistics",
+      "totalDevices": "Total Connected Devices",
+      "activeDevices": "Active Devices",
+      "avgDailyConsumption": "Average Daily Consumption",
+      "efficiencyPct": "Energy Efficiency",
+      "monthlySavings": "Monthly Savings",
+      "todaysAiDecisions": "Today's AI Decisions"
     }
   }
 }

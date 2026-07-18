@@ -15,6 +15,7 @@ import ArchitecturePage from "./pages/ArchitecturePage";
 import ModelLabPage from "./pages/ModelLabPage";
 import SensorConnectivityPage from "./pages/SensorConnectivityPage";
 import FarmConnectivityPage from "./pages/FarmConnectivityPage";
+import EnergyDashboardPage from "./pages/EnergyDashboardPage";
 
 const PAGE_META = {
   "/": { titleKey: "overviewTitle", subtitleKey: "overviewSubtitle" },
@@ -27,6 +28,7 @@ const PAGE_META = {
   "/model-lab": { titleKey: "modelLabTitle", subtitleKey: "modelLabSubtitle" },
   "/sensors": { titleKey: "sensorsTitle", subtitleKey: "sensorsSubtitle" },
   "/farm-network": { titleKey: "farmNetworkTitle", subtitleKey: "farmNetworkSubtitle" },
+  "/energy": { titleKey: "energyTitle", subtitleKey: "energySubtitle" },
 };
 
 function Shell() {
@@ -56,6 +58,7 @@ function Shell() {
             <Route path="/model-lab" element={<ModelLabPage />} />
             <Route path="/sensors" element={<SensorConnectivityPage />} />
             <Route path="/farm-network" element={<FarmConnectivityPage />} />
+            <Route path="/energy" element={<EnergyDashboardPage />} />
           </Routes>
         </div>
       </div>

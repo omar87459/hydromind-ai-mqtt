@@ -52,6 +52,15 @@ structure designed for a straightforward swap to a real database later.
 13. **Farm Network** — a live version of the architecture pipeline (Sensors
     → ESP32 → Gateway → Internet/Satellite → Cloud → Dashboard), each node
     showing real-time connection status.
+14. **Energy Dashboard** — real-time voltage/current/power/energy/
+    frequency/power-factor monitoring, per-device consumption for 7
+    devices with live control (including LED brightness), AI energy
+    optimization recommendations tied to real crop-stage lighting targets,
+    a savings/CO₂ KPI summary, historical analytics with a custom date
+    range (daily/weekly/monthly, device comparison, peak hours), a second
+    trained ML model forecasting next-day/next-week usage, growth-stage
+    energy tuning, smart alerts, downloadable PDF/Excel reports, and
+    AI Auto/Manual device controls. See "Energy Dashboard" below.
 
 ## Project structure
 
@@ -64,13 +73,17 @@ hydromind-ai/
 │   │   ├── data_store.py      Data access layer — local JSON or Supabase (see below)
 │   │   ├── supabase_client.py Lazy Supabase client, used only if configured
 │   │   ├── models.py          Pydantic request/response schemas
-│   │   ├── routers/           crops, methods, sensors, analyze, assistant, ml, rag, iot
+│   │   ├── routers/           crops, methods, sensors, analyze, assistant, ml, rag, iot, energy
 │   │   └── services/          ai_decision_engine, sensor_simulator, knowledge_assistant,
-│   │                          iot_registry, iot_diagnostics
+│   │                          iot_registry, iot_diagnostics, energy_registry,
+│   │                          energy_optimizer, energy_history, energy_anomaly,
+│   │                          energy_reports
 │   ├── data/                  crops.json, methods.json, knowledge_base.json
 │   ├── supabase_setup/         schema.sql + seed.py for the Supabase migration
 │   ├── ml_engine/              synthetic dataset generator, training script,
-│   │                           prediction service, safety layer (see below)
+│   │                           prediction service, safety layer (crop models);
+│   │                           energy_dataset_generator/energy_train/energy_predict
+│   │                           (energy forecast model) — see below
 │   ├── knowledge_base/         markdown corpus for the RAG assistant (*.md)
 │   ├── rag_engine/              chunker, TF-IDF retriever, answer generator
 │   └── requirements.txt
@@ -81,10 +94,11 @@ hydromind-ai/
         ├── api/                 axios client + endpoint wrappers
         ├── context/             AppContext (shared crop/method/stage selection)
         ├── pages/                one file per section, incl. ModelLabPage,
-        │                         SensorConnectivityPage, FarmConnectivityPage
+        │                         SensorConnectivityPage, FarmConnectivityPage,
+        │                         EnergyDashboardPage
         └── components/           layout (incl. LanguageSwitcher), crops, methods,
                                    growth, monitoring, automation, assistant,
-                                   architecture, sensors
+                                   architecture, sensors, energy
 ```
 
 ## Backend setup
@@ -125,6 +139,19 @@ The API will be live at `http://localhost:8000`, with interactive docs at
 | GET | `/iot/diagnostics` | AI-generated diagnostics over current sensor health |
 | GET/POST | `/iot/mode` | Get/set `simulation` or `live` data mode |
 | POST | `/iot/sensors/{sensor_id}/reading` | Real-hardware integration point — a real ESP32 posts a reading here (see "IoT Hardware Integration" below) |
+| GET | `/energy/live` | Real-time voltage, current, power, energy, frequency, power factor, system status |
+| GET | `/energy/devices` | Live per-device power/energy/runtime/status for all 7 devices |
+| POST | `/energy/devices/{device_id}/control` | Turn a device on/off, or set LED brightness — switches to manual mode |
+| GET/POST | `/energy/mode` | Get/set `auto` (AI-driven) or `manual` device mode |
+| GET | `/energy/recommendations?crop_id=&stage=` | AI energy-optimization recommendations, saving %/cost/confidence |
+| GET | `/energy/summary` | Energy Saving Summary KPIs (today/month/year saved, cost, CO₂, efficiency score) |
+| GET | `/energy/history?granularity=&start=&end=` | Historical consumption series (daily/weekly/monthly) for a custom date range |
+| GET | `/energy/history/devices?start=&end=` | Per-device energy comparison for a date range |
+| GET | `/energy/history/peak-hours?date=` | 24-hour consumption pattern for one day |
+| GET | `/energy/predictions?growth_stage=` | ML next-day/next-week forecast + statistical anomaly/equipment-risk checks |
+| GET | `/energy/model-info` | Energy forecast model metadata (dataset size, R², last-trained date) |
+| GET | `/energy/alerts` | Smart Alerts — abnormal power, high cost, disconnected sensors, equipment risk |
+| GET | `/energy/reports/{type}?format=pdf\|xlsx` | Downloadable report (`daily`, `weekly`, `monthly`, `cost`, `efficiency`) |
 
 ## Frontend setup
 
@@ -183,6 +210,47 @@ rationale, and swap in real farm sensor history there when it's available.
 `ml_engine/safety_rules.py` defines hard physiological safety limits that
 override the ML prediction (forcing `Critical`) regardless of model
 confidence — see that file for the exact bounds.
+
+## Energy Dashboard setup (energy forecast model)
+
+The live metrics, device control, optimization recommendations, history,
+alerts, and reports all work with zero setup (pure simulation + rule-based
+logic). Only the ML forecast (`/energy/predictions`, `/energy/model-info`)
+needs a one-time train, same pattern as the crop health/risk models. From
+the `backend/` directory, with the venv active:
+
+```bash
+python -m ml_engine.energy_dataset_generator
+# -> writes backend/ml_engine/data/energy_dataset.csv (4,000 rows)
+
+python -m ml_engine.energy_train
+# -> writes backend/ml_engine/models/energy_model.pkl, energy_metadata.json
+```
+
+Test it:
+
+```bash
+curl http://localhost:8000/energy/model-info
+curl "http://localhost:8000/energy/predictions?growth_stage=vegetative"
+
+# Toggle a device and watch its live wattage change:
+curl -X POST http://localhost:8000/energy/devices/water_chiller/control \
+  -H "Content-Type: application/json" -d '{"is_on": false}'
+
+# Download a report:
+curl -o report.pdf "http://localhost:8000/energy/reports/daily?format=pdf"
+```
+
+The synthetic training data is generated from the real device wattages in
+`app/services/energy_registry.py` and the real per-stage `light_hours` in
+`backend/data/crops.json` (see `ml_engine/energy_dataset_generator.py`),
+so the model learns genuine weekday/season/growth-stage structure rather
+than pure noise. "Detect abnormal consumption" and "equipment failure
+risk" are deliberately **not** part of this model — they're statistical
+heuristics in `app/services/energy_anomaly.py` (deviation from a rolling
+baseline, excessive continuous runtime), consistent with how
+`iot_diagnostics.py` already handles sensor-health heuristics without a
+dedicated classifier.
 
 ## RAG Assistant setup
 
@@ -363,6 +431,14 @@ from Supabase instead, with zero code changes anywhere else.
   Hardware Integration" above).
 - The satellite/cloud architecture (System Architecture page) is a conceptual
   diagram only; no satellite or cloud integration is implemented.
+- The Energy Dashboard's device fleet (`backend/app/services/energy_registry.py`)
+  is a **second, independent** simulated device-state store from the
+  Monitoring page's automation panel (which is client-side-only React
+  state) — they aren't synced with each other. If the automation panel
+  ever moves server-side, `energy_registry.py`'s control functions are the
+  natural place to unify around. The "Dashboard Statistics" and cost/CO₂
+  figures are illustrative heuristics derived from the real device
+  wattages, not measured savings (there's no historical baseline yet).
 
 ## Roadmap (documented, not yet implemented)
 

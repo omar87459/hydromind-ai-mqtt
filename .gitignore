@@ -3,10 +3,10 @@ backend/venv/
 **/__pycache__/
 *.pyc
 
-# ML training artifacts — regenerated at build time (see ml_engine/dataset_generator.py, train.py)
+# ML training artifacts — regenerated at build time (see ml_engine/*_generator.py, *_train.py)
 backend/ml_engine/data/*.csv
 backend/ml_engine/models/*.pkl
-backend/ml_engine/models/metadata.json
+backend/ml_engine/models/*.json
 
 # Node / frontend
 frontend/node_modules/

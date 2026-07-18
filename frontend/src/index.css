@@ -4,6 +4,8 @@
   --brand-green: #008300;
   --brand-yellow: #eda100;
   --brand-violet: #4a3aa7;
+  --brand-red: #e34948;
+  --brand-magenta: #e87ba4;
 
   --surface-1: #fcfcfb;
   --surface-2: #ffffff;
@@ -52,6 +54,8 @@
     --brand-aqua: #199e70;
     --brand-green: #1fae1f;
     --brand-yellow: #c98500;
+    --brand-red: #e66767;
+    --brand-magenta: #d55181;
 
     --status-good: #17c317;
     --status-good-bg: rgba(23, 195, 23, 0.16);

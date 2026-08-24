@@ -3,7 +3,8 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Sidebar from "./components/layout/Sidebar";
 import TopBar from "./components/layout/TopBar";
-import { AppProvider } from "./context/AppContext";
+import { ConnectingBlock } from "./components/common/AsyncState";
+import { AppProvider, useApp } from "./context/AppContext";
 
 import OverviewPage from "./pages/OverviewPage";
 import CropsPage from "./pages/CropsPage";
@@ -35,7 +36,17 @@ function Shell() {
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
   const { t } = useTranslation();
+  const { connectionPhase } = useApp();
   const meta = PAGE_META[location.pathname];
+
+  // Block the whole app behind one friendly "connecting" screen while the
+  // backend wakes up (see AppContext.jsx / utils/backendReady.js) — once it
+  // settles to "ready" (or a real, sustained "error"), render normally.
+  // Existing pages already handle loadError themselves, so the "error"
+  // phase falls through to the normal shell rather than being caught here.
+  if (connectionPhase === "connecting" || connectionPhase === "loading-data") {
+    return <ConnectingBlock phase={connectionPhase} />;
+  }
 
   return (
     <div className="app-shell">

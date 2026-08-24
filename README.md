@@ -120,6 +120,7 @@ The API will be live at `http://localhost:8000`, with interactive docs at
 
 | Method | Path | Description |
 |---|---|---|
+| GET | `/health` | Lightweight readiness probe — no DB/model loading, used by the frontend to detect a cold-started backend |
 | GET | `/crops` | List all crops |
 | GET | `/crops/{crop_id}` | Full detail for one crop, including per-stage targets |
 | GET | `/crops/{crop_id}/methods` | Hydroponic methods compatible with a crop |
@@ -360,7 +361,13 @@ git push -u origin main
    `curl https://your-backend.onrender.com/crops`
 
    Render's free tier spins the service down after inactivity — the first
-   request after idling can take ~30-60s to wake back up.
+   request after idling can take 30-90s to wake back up (measured up to
+   ~74s in testing). The frontend handles this automatically — see
+   "Backend Connection & Cold-Start Handling" below — but if you want to
+   eliminate the wait entirely, use an external free pinger (e.g.
+   [UptimeRobot](https://uptimerobot.com) or
+   [cron-job.org](https://cron-job.org)) to hit `/health` every 10 minutes
+   and keep the instance warm, or upgrade to a paid Render plan.
 
 ### 3. Deploy the frontend on Vercel
 
@@ -384,6 +391,27 @@ instead of any origin.
 Open the Vercel URL on your phone (or any other device) and click through
 Crops → Live Monitoring → AI Knowledge Assistant to confirm everything
 talks to the deployed backend correctly.
+
+## Backend Connection & Cold-Start Handling
+
+The frontend never shows a hard connection error on a normal page load,
+even if the backend is cold-starting. On mount, `AppContext.jsx` (via
+`frontend/src/utils/backendReady.js`) polls `GET /health` — a lightweight,
+dependency-free endpoint — with backoff, up to a 100-second budget (which
+comfortably covers Render free-tier cold starts). While that's in flight,
+`App.jsx` shows a single friendly "Connecting to HydroMind AI…" screen
+instead of the app shell; once `/health` responds, it fetches the real
+crop/method data (with its own short retry) and the app renders normally
+— no manual refresh needed in either case.
+
+This only guards the app's initial load. Individual pages with their own
+polling loops (Monitoring, Energy Dashboard, Sensor Connectivity, etc.)
+already retry on their own interval and are unaffected by this change.
+
+If you ever see the connection screen for longer than ~100 seconds, that
+means `/health` never responded — check the Render service is actually
+deployed and not crash-looping (Render dashboard → Logs), and confirm
+`VITE_API_URL` on Vercel points at the right backend URL.
 
 ## Adding a real cloud database later (optional)
 

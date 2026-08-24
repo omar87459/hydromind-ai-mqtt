@@ -47,3 +47,14 @@ app.include_router(energy.router)
 @app.get("/", tags=["Health"])
 def root():
     return {"status": "ok", "service": "HydroMind AI API"}
+
+
+@app.get("/health", tags=["Health"])
+def health():
+    """
+    Lightweight readiness probe — no DB/model loading, just confirms the
+    process is up and answering requests. Used by the frontend to detect
+    when a cold-started backend (e.g. Render free tier waking from an idle
+    spin-down) has finished booting, before it attempts real data calls.
+    """
+    return {"status": "ok"}

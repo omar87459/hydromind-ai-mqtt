@@ -6,9 +6,9 @@ generated mostly within the selected crop/stage's ideal ranges, with a
 configurable chance of drifting outside them so the AI Monitoring
 Dashboard and Decision Engine have realistic problems to detect.
 
-When ESP32 hardware is connected:
-- Real sensor values override simulation values.
-- Missing sensors are filled automatically with simulated values.
+Supports hybrid mode:
+- Real ESP32 sensor values have priority.
+- Missing sensors are simulated temporarily.
 """
 
 import random
@@ -67,7 +67,6 @@ def generate_reading(
     stage: Optional[str] = None,
     drift_chance: float = 0.25
 ) -> dict:
-
 
     if crop and stage and stage in crop.get("stages", {}):
 
@@ -157,20 +156,20 @@ def merge_with_real_data(
 ) -> dict:
 
     """
-    Merge ESP32 real readings with simulated missing sensors.
-    Real values always have priority.
+    Combine ESP32 real data with simulated missing sensors.
+    Real values always override simulated values.
     """
 
 
     simulated = generate_reading()
 
 
-    # ESP32 values override simulation
+    # ESP32 data overrides simulation
     simulated.update(real_data)
 
 
 
-    # EC sensor (not installed yet)
+    # EC sensor (waiting installation)
     if "ec" not in real_data:
 
         simulated["ec"] = round(
@@ -180,7 +179,7 @@ def merge_with_real_data(
 
 
 
-    # Air temperature sensor
+    # DHT22 air temperature
     if "air_temp" not in real_data:
 
         simulated["air_temp"] = round(
@@ -190,7 +189,7 @@ def merge_with_real_data(
 
 
 
-    # Humidity sensor
+    # DHT22 humidity
     if "humidity" not in real_data:
 
         simulated["humidity"] = round(
@@ -210,7 +209,7 @@ def merge_with_real_data(
 
 
 
-    # INA226 power monitor
+    # INA226 voltage/current
     if "voltage" not in real_data:
 
         simulated["voltage"] = round(
@@ -228,7 +227,7 @@ def merge_with_real_data(
 
 
 
-    # Actuators simulation
+    # Future outputs
     if "fan" not in real_data:
 
         simulated["fan"] = True
@@ -245,7 +244,6 @@ def merge_with_real_data(
             50,
             100
         )
-
 
 
     return simulated

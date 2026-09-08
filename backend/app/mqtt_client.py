@@ -58,7 +58,11 @@ def on_message(client, userdata, msg):
         data = json.loads(payload)
 
         print("ESP32 DATA:")
-        print(data)
+        from .mqtt_data import update_data
+
+update_data(data)
+
+print(data)
 
         # هنا لاحقاً نربطها مع قاعدة البيانات
         # أو نخزنها في data_store.py

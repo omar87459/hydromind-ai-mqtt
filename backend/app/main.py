@@ -4,7 +4,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .mqtt_client import start_mqtt
+
 from .routers import analyze, assistant, crops, energy, iot, methods, ml, rag, sensors
+
 
 app = FastAPI(
     title="HydroMind AI API",
@@ -12,19 +14,19 @@ app = FastAPI(
     version="0.1.0",
 )
 
-# Local dev: wide open (no CORS_ORIGINS set). Production (Render): set
-# CORS_ORIGINS to a comma-separated list of allowed origins, e.g. the
-# deployed Vercel URL — https://your-app.vercel.app
+
 _cors_origins_env = os.environ.get("CORS_ORIGINS")
+
 if _cors_origins_env:
-    _allow_origins = [origin.strip() for origin in _cors_origins_env.split(",")]
+    _allow_origins = [
+        origin.strip()
+        for origin in _cors_origins_env.split(",")
+    ]
     _allow_credentials = True
 else:
-    # A literal wildcard origin is incompatible with allow_credentials=True
-    # per the CORS spec — this app doesn't use cookies/session auth, so
-    # that's fine for the local-dev default.
     _allow_origins = ["*"]
     _allow_credentials = False
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -34,6 +36,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+# Start MQTT connection with EMQX when backend starts
+@app.on_event("startup")
+def startup_event():
+    start_mqtt()
+
+
+# Existing API routers
 app.include_router(crops.router)
 app.include_router(methods.router)
 app.include_router(sensors.router)
@@ -47,15 +57,14 @@ app.include_router(energy.router)
 
 @app.get("/", tags=["Health"])
 def root():
-    return {"status": "ok", "service": "HydroMind AI API"}
+    return {
+        "status": "ok",
+        "service": "HydroMind AI API"
+    }
 
 
 @app.get("/health", tags=["Health"])
 def health():
-    """
-    Lightweight readiness probe — no DB/model loading, just confirms the
-    process is up and answering requests. Used by the frontend to detect
-    when a cold-started backend (e.g. Render free tier waking from an idle
-    spin-down) has finished booting, before it attempts real data calls.
-    """
-    return {"status": "ok"}
+    return {
+        "status": "ok"
+    }

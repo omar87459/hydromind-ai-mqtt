@@ -32,14 +32,14 @@ MQTT_PASSWORD = os.getenv(
 
 
 # ==========================
-# MQTT TOPIC
+# TOPIC
 # ==========================
 
 MQTT_TOPIC = "hydromind/esp32/data"
 
 
 # ==========================
-# MQTT CLIENT
+# CLIENT
 # ==========================
 
 client = mqtt.Client(
@@ -49,34 +49,33 @@ client = mqtt.Client(
 
 
 # ==========================
-# WHEN CONNECTED
+# CONNECT
 # ==========================
 
 def on_connect(client, userdata, flags, reason_code, properties):
 
     if reason_code == 0:
 
-        print("✅ MQTT Connected to EMQX")
+        print("MQTT Connected to EMQX")
 
-        client.subscribe(
-            MQTT_TOPIC
-        )
+        client.subscribe(MQTT_TOPIC)
 
         print(
-            f"✅ Subscribed: {MQTT_TOPIC}"
+            "Subscribed:",
+            MQTT_TOPIC
         )
 
     else:
 
         print(
-            "❌ MQTT connection failed:",
+            "MQTT connection failed:",
             reason_code
         )
 
 
 
 # ==========================
-# RECEIVE DATA FROM ESP32
+# RECEIVE DATA
 # ==========================
 
 def on_message(client, userdata, msg):
@@ -88,13 +87,11 @@ def on_message(client, userdata, msg):
         data = json.loads(payload)
 
 
-        print("===================")
-        print("ESP32 DATA RECEIVED")
+        print("ESP32 DATA:")
         print(data)
-        print("===================")
 
 
-        # Save latest data
+        # حفظ آخر قراءة
         update_data(data)
 
 
@@ -113,25 +110,23 @@ def on_message(client, userdata, msg):
 
 def start_mqtt():
 
+    client.username_pw_set(
+        MQTT_USERNAME,
+        MQTT_PASSWORD
+    )
+
+
+    client.tls_set(
+        tls_version=ssl.PROTOCOL_TLS_CLIENT
+    )
+
+
+    client.on_connect = on_connect
+
+    client.on_message = on_message
+
+
     try:
-
-        client.username_pw_set(
-            MQTT_USERNAME,
-            MQTT_PASSWORD
-        )
-
-
-        # EMQX Cloud TLS
-        client.tls_set(
-            tls_version=ssl.PROTOCOL_TLS_CLIENT
-        )
-
-
-        client.on_connect = on_connect
-
-        client.on_message = on_message
-
-
 
         client.connect(
             MQTT_HOST,
@@ -149,13 +144,13 @@ def start_mqtt():
 
 
         print(
-            "✅ MQTT service started"
+            "MQTT service started"
         )
 
 
     except Exception as e:
 
         print(
-            "❌ MQTT startup error:",
+            "MQTT startup error:",
             e
         )

@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .mqtt_client import start_mqtt
 
-from .routers import analyze, assistant, crops, energy, iot, methods, ml, rag, sensors
+from .routers import analyze, assistant, crops, energy, iot, methods, ml, rag, sensors, mqtt
 
 
 app = FastAPI(
@@ -53,6 +53,7 @@ app.include_router(ml.router)
 app.include_router(rag.router)
 app.include_router(iot.router)
 app.include_router(energy.router)
+app.include_router(mqtt.router)
 
 
 @app.get("/", tags=["Health"])

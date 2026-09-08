@@ -4,14 +4,21 @@ import ssl
 import threading
 import paho.mqtt.client as mqtt
 
+from .mqtt_data import update_data
 
-# EMQX settings
+
+# ==========================
+# EMQX SETTINGS
+# ==========================
+
 MQTT_HOST = os.getenv(
     "MQTT_HOST",
-    "q1a7afa2.ala.asia-southeast1.emqxsl.com"
+    "q1a7afa2.a1a.asia-southeast1.emqxsl.com"
 )
 
-MQTT_PORT = int(os.getenv("MQTT_PORT", 8883))
+MQTT_PORT = int(
+    os.getenv("MQTT_PORT", 8883)
+)
 
 MQTT_USERNAME = os.getenv(
     "MQTT_USERNAME",
@@ -24,9 +31,16 @@ MQTT_PASSWORD = os.getenv(
 )
 
 
-# Topic that ESP32 will publish to
+# ==========================
+# MQTT TOPIC
+# ==========================
+
 MQTT_TOPIC = "hydromind/esp32/data"
 
+
+# ==========================
+# MQTT CLIENT
+# ==========================
 
 client = mqtt.Client(
     mqtt.CallbackAPIVersion.VERSION2,
@@ -34,63 +48,97 @@ client = mqtt.Client(
 )
 
 
-def on_connect(client, userdata, flags, reason_code, properties):
-    if reason_code == 0:
-        print("MQTT Connected to EMQX")
+# ==========================
+# WHEN CONNECTED
+# ==========================
 
-        client.subscribe(MQTT_TOPIC)
+def on_connect(client, userdata, flags, reason_code, properties):
+
+    if reason_code == 0:
+
+        print("✅ MQTT Connected to EMQX")
+
+        client.subscribe(
+            MQTT_TOPIC
+        )
 
         print(
-            f"Subscribed to topic: {MQTT_TOPIC}"
+            f"✅ Subscribed: {MQTT_TOPIC}"
         )
 
     else:
+
         print(
-            "MQTT connection failed:",
+            "❌ MQTT connection failed:",
             reason_code
         )
 
 
+
+# ==========================
+# RECEIVE DATA FROM ESP32
+# ==========================
+
 def on_message(client, userdata, msg):
+
     try:
+
         payload = msg.payload.decode()
 
         data = json.loads(payload)
 
-        print("ESP32 DATA:")
+
+        print("===================")
+        print("ESP32 DATA RECEIVED")
         print(data)
+        print("===================")
 
-        from .mqtt_data import update_data
 
+        # Save latest data
         update_data(data)
 
+
     except Exception as e:
+
         print(
             "MQTT message error:",
             e
         )
 
+
+
+# ==========================
+# START MQTT
+# ==========================
+
 def start_mqtt():
 
-    client.username_pw_set(
-        MQTT_USERNAME,
-        MQTT_PASSWORD
-    )
-
-    # TLS for EMQX Cloud
-    client.tls_set(
-        tls_version=ssl.PROTOCOL_TLS_CLIENT
-    )
-
-    client.on_connect = on_connect
-    client.on_message = on_message
-
     try:
+
+        client.username_pw_set(
+            MQTT_USERNAME,
+            MQTT_PASSWORD
+        )
+
+
+        # EMQX Cloud TLS
+        client.tls_set(
+            tls_version=ssl.PROTOCOL_TLS_CLIENT
+        )
+
+
+        client.on_connect = on_connect
+
+        client.on_message = on_message
+
+
+
         client.connect(
             MQTT_HOST,
             MQTT_PORT,
             60
         )
+
 
         thread = threading.Thread(
             target=client.loop_forever,
@@ -99,10 +147,15 @@ def start_mqtt():
 
         thread.start()
 
-        print("MQTT service started")
+
+        print(
+            "✅ MQTT service started"
+        )
+
 
     except Exception as e:
+
         print(
-            "MQTT startup error:",
+            "❌ MQTT startup error:",
             e
         )

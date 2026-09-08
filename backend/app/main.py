@@ -3,6 +3,7 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from .mqtt_client import start_mqtt
 from .routers import analyze, assistant, crops, energy, iot, methods, ml, rag, sensors
 
 app = FastAPI(

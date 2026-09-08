@@ -5,7 +5,18 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .mqtt_client import start_mqtt
 
-from .routers import analyze, assistant, crops, energy, iot, methods, ml, rag, sensors, mqtt
+from .routers import (
+    analyze,
+    assistant,
+    crops,
+    energy,
+    iot,
+    methods,
+    ml,
+    rag,
+    sensors,
+    mqtt
+)
 
 
 app = FastAPI(
@@ -37,13 +48,13 @@ app.add_middleware(
 )
 
 
-# Start MQTT connection with EMQX when backend starts
+# تشغيل MQTT مع تشغيل السيرفر
 @app.on_event("startup")
 def startup_event():
     start_mqtt()
 
 
-# Existing API routers
+# API Routes
 app.include_router(crops.router)
 app.include_router(methods.router)
 app.include_router(sensors.router)

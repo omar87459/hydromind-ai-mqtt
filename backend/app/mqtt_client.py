@@ -7,10 +7,6 @@ import paho.mqtt.client as mqtt
 from .mqtt_data import update_data
 
 
-# ==========================
-# EMQX SETTINGS
-# ==========================
-
 MQTT_HOST = os.getenv(
     "MQTT_HOST",
     "q1a7afa2.a1a.asia-southeast1.emqxsl.com"
@@ -31,16 +27,8 @@ MQTT_PASSWORD = os.getenv(
 )
 
 
-# ==========================
-# TOPIC
-# ==========================
-
 MQTT_TOPIC = "hydromind/esp32/data"
 
-
-# ==========================
-# CLIENT
-# ==========================
 
 client = mqtt.Client(
     mqtt.CallbackAPIVersion.VERSION2,
@@ -48,35 +36,23 @@ client = mqtt.Client(
 )
 
 
-# ==========================
-# CONNECT
-# ==========================
-
 def on_connect(client, userdata, flags, reason_code, properties):
 
     if reason_code == 0:
-
         print("MQTT Connected to EMQX")
 
         client.subscribe(MQTT_TOPIC)
 
         print(
-            "Subscribed:",
-            MQTT_TOPIC
+            f"Subscribed to topic: {MQTT_TOPIC}"
         )
 
     else:
-
         print(
             "MQTT connection failed:",
             reason_code
         )
 
-
-
-# ==========================
-# RECEIVE DATA
-# ==========================
 
 def on_message(client, userdata, msg):
 
@@ -86,12 +62,9 @@ def on_message(client, userdata, msg):
 
         data = json.loads(payload)
 
-
         print("ESP32 DATA:")
         print(data)
 
-
-        # حفظ آخر قراءة
         update_data(data)
 
 
@@ -102,11 +75,6 @@ def on_message(client, userdata, msg):
             e
         )
 
-
-
-# ==========================
-# START MQTT
-# ==========================
 
 def start_mqtt():
 
@@ -122,7 +90,6 @@ def start_mqtt():
 
 
     client.on_connect = on_connect
-
     client.on_message = on_message
 
 
@@ -143,9 +110,7 @@ def start_mqtt():
         thread.start()
 
 
-        print(
-            "MQTT service started"
-        )
+        print("MQTT service started")
 
 
     except Exception as e:

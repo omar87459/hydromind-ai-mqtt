@@ -36,27 +36,57 @@ def _value_in_range(lo: float, hi: float, drift_chance: float) -> float:
 
 
 def generate_reading(
-    crop: Optional[dict] = None, stage: Optional[str] = None, drift_chance: float = 0.25
-) -> dict:
-    if crop and stage and stage in crop.get("stages", {}):
-        s = crop["stages"][stage]
-        ranges = {
-            "ph": (s["ph"]["min"], s["ph"]["max"]),
-            "ec": (s["ec"]["min"], s["ec"]["max"]),
-            "air_temp": (s["air_temp"]["min"], s["air_temp"]["max"]),
-            "water_temp": (s["water_temp"]["min"], s["water_temp"]["max"]),
-            "light_intensity": (s["light_intensity"]["min"], s["light_intensity"]["max"]),
-            "humidity": (crop["humidity_range"]["min"], crop["humidity_range"]["max"]),
-        }
-    else:
-        ranges = DEFAULT_RANGES
+  def merge_with_real_data(real_data: dict) -> dict:
+    """
+    Use real ESP32 values when available.
+    Fill missing sensors with simulation values.
+    """
 
-    return {
-        "ph": _value_in_range(*ranges["ph"], drift_chance),
-        "ec": _value_in_range(*ranges["ec"], drift_chance),
-        "water_temp": _value_in_range(*ranges["water_temp"], drift_chance),
-        "air_temp": _value_in_range(*ranges["air_temp"], drift_chance),
-        "humidity": _value_in_range(*ranges["humidity"], drift_chance),
-        "water_level": round(random.uniform(55, 100), 1),
-        "light_intensity": _value_in_range(*ranges["light_intensity"], drift_chance),
-    }
+    simulated = generate_reading()
+
+    # القيم الحقيقية لها الأولوية
+    simulated.update(real_data)
+
+    # حساسات لم تصل بعد
+    if "ec" not in real_data:
+        simulated["ec"] = round(
+            random.uniform(1.2, 2.0), 2
+        )
+
+    if "air_temp" not in real_data:
+        simulated["air_temp"] = round(
+            random.uniform(22, 27), 1
+        )
+
+    if "humidity" not in real_data:
+        simulated["humidity"] = round(
+            random.uniform(50, 70), 1
+        )
+
+    if "light_intensity" not in real_data:
+        simulated["light_intensity"] = random.randint(
+            300, 900
+        )
+
+    if "voltage" not in real_data:
+        simulated["voltage"] = round(
+            random.uniform(12.0, 13.0), 2
+        )
+
+    if "current" not in real_data:
+        simulated["current"] = round(
+            random.uniform(0.5, 2.5), 2
+        )
+
+    if "fan" not in real_data:
+        simulated["fan"] = True
+
+    if "nutrientPump" not in real_data:
+        simulated["nutrientPump"] = False
+
+    if "light" not in real_data:
+        simulated["light"] = random.randint(
+            50, 100
+        )
+
+    return simulated

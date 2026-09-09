@@ -7,19 +7,27 @@ import paho.mqtt.client as mqtt
 from .mqtt_data import update_data
 
 
+# EMQX settings
+
 MQTT_HOST = os.getenv(
     "MQTT_HOST",
-    "q1a7afa2.a1a.asia-southeast1.emqxsl.com"
+    "q1a7afa2.ala.asia-southeast1.emqxsl.com"
 )
 
+
 MQTT_PORT = int(
-    os.getenv("MQTT_PORT", 8883)
+    os.getenv(
+        "MQTT_PORT",
+        8883
+    )
 )
+
 
 MQTT_USERNAME = os.getenv(
     "MQTT_USERNAME",
     "esp32"
 )
+
 
 MQTT_PASSWORD = os.getenv(
     "MQTT_PASSWORD",
@@ -27,7 +35,11 @@ MQTT_PASSWORD = os.getenv(
 )
 
 
+
+# ESP32 topic
+
 MQTT_TOPIC = "hydromind/esp32/data"
+
 
 
 client = mqtt.Client(
@@ -36,36 +48,97 @@ client = mqtt.Client(
 )
 
 
-def on_connect(client, userdata, flags, reason_code, properties):
+
+def on_connect(
+    client,
+    userdata,
+    flags,
+    reason_code,
+    properties
+):
 
     if reason_code == 0:
-        print("MQTT Connected to EMQX")
 
-        client.subscribe(MQTT_TOPIC)
+        print(
+            "MQTT Connected to EMQX"
+        )
+
+
+        client.subscribe(
+            MQTT_TOPIC
+        )
+
 
         print(
             f"Subscribed to topic: {MQTT_TOPIC}"
         )
 
+
     else:
+
         print(
             "MQTT connection failed:",
             reason_code
         )
 
 
-def on_message(client, userdata, msg):
+
+
+def on_message(
+    client,
+    userdata,
+    msg
+):
 
     try:
 
-        payload = msg.payload.decode()
+        # Raw message from ESP32
 
-        data = json.loads(payload)
+        payload = msg.payload.decode(
+            "utf-8"
+        )
 
-        print("ESP32 DATA:")
-        print(data)
 
-        update_data(data)
+        print(
+            "RAW MQTT:"
+        )
+
+        print(
+            payload
+        )
+
+
+
+        # Convert JSON
+
+        data = json.loads(
+            payload
+        )
+
+
+        print(
+            "JSON DATA:"
+        )
+
+        print(
+            data
+        )
+
+
+
+        # Send to data store
+
+        update_data(
+            data
+        )
+
+
+    except json.JSONDecodeError as e:
+
+        print(
+            "JSON decode error:",
+            e
+        )
 
 
     except Exception as e:
@@ -76,6 +149,8 @@ def on_message(client, userdata, msg):
         )
 
 
+
+
 def start_mqtt():
 
     client.username_pw_set(
@@ -84,13 +159,17 @@ def start_mqtt():
     )
 
 
+    # TLS for EMQX Cloud
+
     client.tls_set(
         tls_version=ssl.PROTOCOL_TLS_CLIENT
     )
 
 
     client.on_connect = on_connect
+
     client.on_message = on_message
+
 
 
     try:
@@ -107,10 +186,13 @@ def start_mqtt():
             daemon=True
         )
 
+
         thread.start()
 
 
-        print("MQTT service started")
+        print(
+            "MQTT service started"
+        )
 
 
     except Exception as e:

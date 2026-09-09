@@ -22,7 +22,6 @@ def get_sensors():
     }
 
 
-
 @router.get("/network-status")
 def get_network_status():
     """Live status for each layer of the sensors → ESP32 → gateway → cloud pipeline."""
@@ -30,7 +29,6 @@ def get_network_status():
         "mode": iot_registry.get_mode(),
         "nodes": iot_registry.get_network_status()
     }
-
 
 
 @router.get("/diagnostics")
@@ -43,7 +41,6 @@ def get_diagnostics():
     }
 
 
-
 @router.get("/mode")
 def get_mode():
     return {
@@ -51,10 +48,8 @@ def get_mode():
     }
 
 
-
 @router.post("/mode")
 def set_mode(payload: IoTModeRequest):
-
     try:
         mode = iot_registry.set_mode(payload.mode)
 
@@ -69,16 +64,11 @@ def set_mode(payload: IoTModeRequest):
     }
 
 
-
 @router.post("/sensors/{sensor_id}/reading")
 def post_sensor_reading(
     sensor_id: str,
     payload: IoTReadingRequest
 ):
-    """
-    Real hardware integration point.
-    """
-
     record = iot_registry.record_live_reading(
         sensor_id,
         value=payload.value,
@@ -96,23 +86,17 @@ def post_sensor_reading(
     return record
 
 
-
 @router.get("/pumps")
 def get_pumps():
     """
     Current pump states.
 
-    Main Pump:
-    GPIO23
-
-    pH Pump:
-    GPIO22
+    Main Pump: GPIO23
+    pH Pump: GPIO22
     """
-
     return {
         "pumps": pump_registry.get_pumps()
     }
-
 
 
 @router.post("/control")
@@ -120,9 +104,7 @@ def post_control(
     payload: PumpControlRequest
 ):
     """
-    Pump control endpoint.
-
-    Requires password before sending MQTT command.
+    Pump control with password protection.
     """
 
     correct_password = os.getenv(

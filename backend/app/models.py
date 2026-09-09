@@ -140,10 +140,16 @@ class IoTModeRequest(BaseModel):
 
 
 class PumpControlRequest(BaseModel):
-    """Body for POST /iot/control — turns a relay-controlled pump on/off."""
+    """
+    Body for POST /iot/control —
+    turns a relay-controlled pump on/off.
+
+    Requires password authentication.
+    """
 
     pump: str  # "mainPump" | "phPump"
     state: bool
+    password: str
 
 
 class EnergyDeviceControlRequest(BaseModel):

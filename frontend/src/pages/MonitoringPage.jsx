@@ -161,17 +161,47 @@ export default function MonitoringPage() {
     };
   }, []);
 
-  async function handlePumpToggle(pump, state) {
-    setPumpPending((prev) => ({ ...prev, [pump]: true }));
-    try {
-      const record = await postIotControl(pump, state);
-      setPumps((prev) => ({ ...prev, [pump]: record }));
-    } catch {
-      // Leave the last known state in place; the next poll will reconcile.
-    } finally {
-      setPumpPending((prev) => ({ ...prev, [pump]: false }));
+  async function handlePumpToggle(
+  pump,
+  state,
+  password
+) {
+  setPumpPending((prev) => ({
+    ...prev,
+    [pump]: true,
+  }));
+
+  try {
+    const record = await postIotControl(
+      pump,
+      state,
+      password
+    );
+
+    setPumps((prev) => ({
+      ...prev,
+      [pump]: record,
+    }));
+
+  } catch (err) {
+    console.error(
+      "Pump control failed:",
+      err
+    );
+
+    if (err.message === "Wrong password") {
+      alert("Wrong pump password");
+    } else {
+      alert("Pump control failed");
     }
+
+  } finally {
+    setPumpPending((prev) => ({
+      ...prev,
+      [pump]: false,
+    }));
   }
+}
 
   if (loading) return <LoadingBlock label={t("common.loading")} />;
   if (loadError) return <ErrorBlock message={loadError} />;

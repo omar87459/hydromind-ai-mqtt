@@ -96,8 +96,20 @@ export async function fetchIotPumps() {
   return data;
 }
 
-export async function postIotControl(pump, state) {
-  const { data } = await client.post("/iot/control", { pump, state });
+export async function postIotControl(
+  pump,
+  state,
+  password
+) {
+  const { data } = await client.post(
+    "/iot/control",
+    {
+      pump,
+      state,
+      password,
+    }
+  );
+
   return data;
 }
 

@@ -164,6 +164,7 @@
   },
   "monitoring": {
     "intro": "Simulated IoT sensors refresh every {{seconds}}s and are compared against {{stage}} targets for the selected crop.",
+    "liveTag": "Live",
     "sensorTrend": "Sensor Trend — {{param}}",
     "aiDecisionEngine": "AI Decision Engine",
     "allIdeal": "All monitored parameters are within the ideal range for the current growth stage.",

@@ -22,7 +22,7 @@ const PARAM_UNIT = {
   light_intensity: " µmol/m²/s",
 };
 
-export default function SensorGrid({ reading, statusByParam }) {
+export default function SensorGrid({ reading, statusByParam, liveParams = [] }) {
   const { t } = useTranslation();
   const order = ["ph", "ec", "water_temp", "air_temp", "humidity", "water_level", "light_intensity"];
 
@@ -32,12 +32,18 @@ export default function SensorGrid({ reading, statusByParam }) {
         const Icon = PARAM_ICON[param];
         const value = reading?.[param];
         const status = statusByParam?.[param] || (param === "water_level" ? undefined : "unknown");
+        const isLive = liveParams.includes(param);
         return (
           <div className="card" key={param}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-8 text-muted" style={{ fontSize: 12 }}>
                 <Icon size={15} />
                 {t(`monitoring.params.${param}`)}
+                {isLive && (
+                  <span className="badge badge-good" style={{ fontSize: 9, padding: "1px 5px" }}>
+                    {t("monitoring.liveTag")}
+                  </span>
+                )}
               </div>
               {status && <StatusBadge status={status} small />}
             </div>

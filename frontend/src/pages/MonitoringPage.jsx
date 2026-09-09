@@ -29,6 +29,8 @@ export default function MonitoringPage() {
   const [reading, setReading] = useState(null);
   const [statuses, setStatuses] = useState([]);
   const [overallStatus, setOverallStatus] = useState("unknown");
+  const [mode, setMode] = useState("simulation");
+  const [liveParams, setLiveParams] = useState([]);
   const [issues, setIssues] = useState([]);
   const [analyzing, setAnalyzing] = useState(false);
   const [history, setHistory] = useState([]);
@@ -56,6 +58,8 @@ export default function MonitoringPage() {
         snapshot.statuses.forEach((s) => (statusMap[s.parameter] = s.status));
         setStatuses(statusMap);
         setOverallStatus(snapshot.overall_status);
+        setMode(snapshot.mode || "simulation");
+        setLiveParams(snapshot.live_params || []);
         setConnError(null);
 
         tickRef.current += 1;
@@ -143,6 +147,16 @@ export default function MonitoringPage() {
         })}
       </p>
 
+      <div className="flex items-center gap-8 wrap" style={{ marginBottom: 12 }}>
+        <span className={`badge ${mode === "simulation" ? "badge-warning" : "badge-good"}`}>
+          {mode === "simulation"
+            ? `🟡 ${t("sensors.simulationMode")}`
+            : mode === "hybrid"
+            ? `🟢 ${t("sensors.hybridDataMode")}`
+            : `🟢 ${t("sensors.liveDataMode")}`}
+        </span>
+      </div>
+
       <div className="card flex items-center justify-between wrap gap-16" style={{ marginBottom: 20 }}>
         <div className="flex items-center gap-8 wrap">
           {crops.map((c) => (
@@ -177,7 +191,7 @@ export default function MonitoringPage() {
 
       {reading && (
         <>
-          <SensorGrid reading={reading} statusByParam={statusMapForGrid} />
+          <SensorGrid reading={reading} statusByParam={statusMapForGrid} liveParams={liveParams} />
 
           <div className="mt-16">
             <SensorTrendChart history={history} />

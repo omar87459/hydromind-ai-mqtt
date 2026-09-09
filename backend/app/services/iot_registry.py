@@ -152,6 +152,22 @@ def get_sensors() -> list:
     return list(_state["sensors"].values())
 
 
+def get_live_values() -> dict:
+    """
+    sensor_type -> current reading for every sensor that has received a real
+    ESP32 value (data_source == "esp32"). Lets other endpoints (e.g.
+    GET /sensor-data, which generates its own crop/stage-aware simulated
+    reading) overlay real hardware values on top of simulation without
+    duplicating the hybrid bookkeeping already done here.
+    """
+    _ensure_init()
+    return {
+        sensor_type: rec["reading"]
+        for sensor_type, rec in _state["sensors"].items()
+        if rec["data_source"] == "esp32"
+    }
+
+
 def get_network_status() -> list:
     _ensure_init()
     if _state["mode"] == "simulation":

@@ -100,9 +100,14 @@ def get_pumps():
 
 
 @router.post("/control")
+
 def post_control(
     payload: PumpControlRequest
 ):
+
+def post_control(payload: PumpControlRequest):
+
+
     """
     Pump control with password protection.
     """
@@ -111,7 +116,6 @@ def post_control(
         "PUMP_CONTROL_PASSWORD",
         "hydro100"
     )
-
 
     if payload.password != correct_password:
         raise HTTPException(
@@ -125,7 +129,10 @@ def post_control(
             payload.pump,
             payload.state
         )
+<<<<<<< HEAD
 
+=======
+>>>>>>> 604251e (Add pump password protection)
     except ValueError as exc:
         raise HTTPException(
             status_code=400,

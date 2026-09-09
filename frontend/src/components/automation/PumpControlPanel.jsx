@@ -9,6 +9,16 @@ const PUMPS = [
 
 export default function PumpControlPanel({ pumps, pending, onToggle }) {
   const { t } = useTranslation();
+  const [password, setPassword] = useState("");
+
+  const handleToggle = (key, state) => {
+    if (!password) {
+      alert("Enter pump password");
+      return;
+    }
+
+    onToggle(key, state, password);
+  };
 
   const [password, setPassword] = useState("");
 
@@ -27,6 +37,7 @@ export default function PumpControlPanel({ pumps, pending, onToggle }) {
         <h3>{t("pumpControl.title")}</h3>
       </div>
 
+
       <div className="mt-8">
         <input
           type="password"
@@ -38,6 +49,18 @@ export default function PumpControlPanel({ pumps, pending, onToggle }) {
       </div>
 
       <div className="grid grid-cols-2 gap-12 mt-12">
+
+<div className="mt-8">
+  <input
+    type="password"
+    placeholder="Pump password"
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+    className="input"
+  />
+</div>
+      <div className="grid grid-cols-2 gap-12">
+
         {PUMPS.map(({ key, icon: Icon }) => {
           const pump = pumps[key];
           const isOn = !!pump?.state;
@@ -83,12 +106,16 @@ export default function PumpControlPanel({ pumps, pending, onToggle }) {
                   isOn ? "" : "btn-primary"
                 }`}
                 disabled={isPending}
+
                 onClick={() =>
                   handleToggle(
                     key,
                     !isOn
                   )
                 }
+
+                onClick={() => handleToggle(key, !isOn)}
+
               >
                 {isPending
                   ? t("pumpControl.updating")

@@ -189,11 +189,17 @@ export default function MonitoringPage() {
       err
     );
 
+
     if (err.message === "Wrong password") {
       alert("Wrong pump password");
     } else {
       alert("Pump control failed");
     }
+
+    alert(
+      "Wrong password or pump control failed"
+    );
+
 
   } finally {
     setPumpPending((prev) => ({

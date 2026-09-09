@@ -1,17 +1,24 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useApp } from "../context/AppContext";
-import { fetchSensorData, postAnalyze, postRecommendAction } from "../api";
+import { fetchSensorData, postAnalyze, postRecommendAction, fetchIotPumps, postIotControl } from "../api";
 import { LoadingBlock, ErrorBlock } from "../components/common/AsyncState";
 import SensorGrid from "../components/monitoring/SensorGrid";
 import SensorTrendChart from "../components/monitoring/SensorTrendChart";
 import IssuesPanel from "../components/monitoring/IssuesPanel";
 import MLPredictionPanel from "../components/monitoring/MLPredictionPanel";
 import ControlPanel from "../components/automation/ControlPanel";
+import PumpControlPanel from "../components/automation/PumpControlPanel";
 import { deriveAutomationSuggestions } from "../utils/automation";
 
 const POLL_INTERVAL_MS = 5000;
+const PUMP_POLL_INTERVAL_MS = 3000;
 const HISTORY_LIMIT = 15;
+
+const DEFAULT_PUMPS = {
+  mainPump: { pump: "mainPump", state: false, source: "default" },
+  phPump: { pump: "phPump", state: false, source: "default" },
+};
 
 const DEFAULT_DEVICE_STATES = {
   main_pump: true,
@@ -39,6 +46,8 @@ export default function MonitoringPage() {
   const [mlPrediction, setMlPrediction] = useState(null);
   const [mlLoading, setMlLoading] = useState(false);
   const [mlError, setMlError] = useState(null);
+  const [pumps, setPumps] = useState(DEFAULT_PUMPS);
+  const [pumpPending, setPumpPending] = useState({});
 
   const tickRef = useRef(0);
   const selectedCrop = crops.find((c) => c.id === selectedCropId);
@@ -132,6 +141,38 @@ export default function MonitoringPage() {
     };
   }, [selectedCropId, selectedStage, crops]);
 
+  useEffect(() => {
+    let cancelled = false;
+
+    async function pollPumps() {
+      try {
+        const { pumps: latest } = await fetchIotPumps();
+        if (!cancelled) setPumps((prev) => ({ ...prev, ...latest }));
+      } catch {
+        // Pump status is best-effort; the sensor poll above already surfaces backend errors.
+      }
+    }
+
+    pollPumps();
+    const interval = setInterval(pollPumps, PUMP_POLL_INTERVAL_MS);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, []);
+
+  async function handlePumpToggle(pump, state) {
+    setPumpPending((prev) => ({ ...prev, [pump]: true }));
+    try {
+      const record = await postIotControl(pump, state);
+      setPumps((prev) => ({ ...prev, [pump]: record }));
+    } catch {
+      // Leave the last known state in place; the next poll will reconcile.
+    } finally {
+      setPumpPending((prev) => ({ ...prev, [pump]: false }));
+    }
+  }
+
   if (loading) return <LoadingBlock label={t("common.loading")} />;
   if (loadError) return <ErrorBlock message={loadError} />;
 
@@ -200,6 +241,10 @@ export default function MonitoringPage() {
           <div className="grid grid-cols-2 mt-16" style={{ alignItems: "start" }}>
             <IssuesPanel issues={issues} overallStatus={overallStatus} analyzing={analyzing && issues.length === 0} />
             <MLPredictionPanel prediction={mlPrediction} loading={mlLoading && !mlPrediction} error={mlError} />
+          </div>
+
+          <div className="mt-16">
+            <PumpControlPanel pumps={pumps} pending={pumpPending} onToggle={handlePumpToggle} />
           </div>
 
           <div className="mt-16">

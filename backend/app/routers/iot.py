@@ -1,7 +1,8 @@
 from fastapi import APIRouter, HTTPException
 
-from ..models import IoTModeRequest, IoTReadingRequest
-from ..services import iot_diagnostics, iot_registry
+from .. import mqtt_client
+from ..models import IoTModeRequest, IoTReadingRequest, PumpControlRequest
+from ..services import iot_diagnostics, iot_registry, pump_registry
 
 router = APIRouter(prefix="/iot", tags=["IoT Sensor Connectivity"])
 
@@ -58,4 +59,28 @@ def post_sensor_reading(sensor_id: str, payload: IoTReadingRequest):
     )
     if record is None:
         raise HTTPException(status_code=404, detail=f"Unknown sensor '{sensor_id}'")
+    return record
+
+
+@router.get("/pumps")
+def get_pumps():
+    """Current commanded/device-confirmed state for the main water pump (GPIO23)
+    and pH dosing pump (GPIO22)."""
+    return {"pumps": pump_registry.get_pumps()}
+
+
+@router.post("/control")
+def post_control(payload: PumpControlRequest):
+    """
+    Turn a relay-controlled pump on the ESP32 on/off. Publishes
+    {"pump": ..., "state": ...} to the hydromind/esp32/control MQTT topic,
+    which the ESP32 subscribes to, and optimistically records the commanded
+    state in the pump registry (overwritten by the device-confirmed state
+    once the ESP32 echoes it back on hydromind/esp32/data).
+    """
+    try:
+        record = pump_registry.set_command(payload.pump, payload.state)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    mqtt_client.publish_pump_command(payload.pump, payload.state)
     return record

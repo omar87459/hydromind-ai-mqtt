@@ -301,6 +301,16 @@
       "dashboard": { "title": "Farmer Dashboard", "desc": "The HydroMind AI web app — live monitoring, AI recommendations, and remote control, accessible from anywhere." }
     }
   },
+  "pumpControl": {
+    "title": "Pump Control",
+    "mainPump": "Main Pump",
+    "phPump": "pH Pump",
+    "turnOn": "Turn On",
+    "turnOff": "Turn Off",
+    "updating": "Updating…",
+    "confirmed": "Confirmed by device",
+    "pendingConfirmation": "Command sent — waiting for device confirmation"
+  },
   "sensors": {
     "intro": "Simulated connections to real IoT hardware — every sensor device, its live reading, and its connection health.",
     "liveDataMode": "Live Sensor Data",

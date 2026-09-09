@@ -139,6 +139,13 @@ class IoTModeRequest(BaseModel):
     mode: str  # "simulation" | "live"
 
 
+class PumpControlRequest(BaseModel):
+    """Body for POST /iot/control — turns a relay-controlled pump on/off."""
+
+    pump: str  # "mainPump" | "phPump"
+    state: bool
+
+
 class EnergyDeviceControlRequest(BaseModel):
     is_on: Optional[bool] = None
     brightness_pct: Optional[float] = None

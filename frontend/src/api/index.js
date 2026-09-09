@@ -91,6 +91,16 @@ export async function postIotMode(mode) {
   return data;
 }
 
+export async function fetchIotPumps() {
+  const { data } = await client.get("/iot/pumps");
+  return data;
+}
+
+export async function postIotControl(pump, state) {
+  const { data } = await client.post("/iot/control", { pump, state });
+  return data;
+}
+
 export async function fetchEnergyLive() {
   const { data } = await client.get("/energy/live");
   return data;

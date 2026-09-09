@@ -36,9 +36,11 @@ MQTT_PASSWORD = os.getenv(
 
 
 
-# ESP32 topic
+# ESP32 topics
 
 MQTT_TOPIC = "hydromind/esp32/data"
+
+MQTT_CONTROL_TOPIC = "hydromind/esp32/control"
 
 
 
@@ -147,6 +149,37 @@ def on_message(
             "MQTT message error:",
             e
         )
+
+
+
+
+def publish_pump_command(pump: str, state: bool) -> bool:
+
+    payload = json.dumps(
+        {
+            "pump": pump,
+            "state": state,
+        }
+    )
+
+    try:
+
+        result = client.publish(
+            MQTT_CONTROL_TOPIC,
+            payload,
+            qos=1,
+        )
+
+        return result.rc == mqtt.MQTT_ERR_SUCCESS
+
+    except Exception as e:
+
+        print(
+            "MQTT publish error:",
+            e
+        )
+
+        return False
 
 
 

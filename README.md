@@ -31,7 +31,9 @@ structure designed for a straightforward swap to a real database later.
    conceptual diagram (not a live integration).
 8. **Automation Control Panel** — toggles for the main water pump, nutrient
    pump, pH dosing pump, grow lights, and cooling fan, with AI-suggested
-   ON/OFF state and reasoning for each.
+   ON/OFF state and reasoning for each. A separate **Pump Control** panel
+   sends real ON/OFF commands to the ESP32's main pump and pH pump relays
+   over MQTT (see "Pump control (ESP32 relays)" below).
 9. **ML Engine** — a real scikit-learn pipeline (`backend/ml_engine/`) trained
    on a synthetic hydroponic dataset: a RandomForestClassifier predicts
    Ideal/Warning/Critical health status, a RandomForestRegressor predicts a
@@ -140,6 +142,8 @@ The API will be live at `http://localhost:8000`, with interactive docs at
 | GET | `/iot/diagnostics` | AI-generated diagnostics over current sensor health |
 | GET/POST | `/iot/mode` | Get/set `simulation` or `live` data mode |
 | POST | `/iot/sensors/{sensor_id}/reading` | Real-hardware integration point — a real ESP32 posts a reading here (see "IoT Hardware Integration" below) |
+| GET | `/iot/pumps` | Commanded/device-confirmed state for the main water pump and pH dosing pump |
+| POST | `/iot/control` | Turn a pump (`mainPump` \| `phPump`) on/off — publishes the command to the ESP32 over MQTT |
 | GET | `/energy/live` | Real-time voltage, current, power, energy, frequency, power factor, system status |
 | GET | `/energy/devices` | Live per-device power/energy/runtime/status for all 7 devices |
 | POST | `/energy/devices/{device_id}/control` | Turn a device on/off, or set LED brightness — switches to manual mode |
@@ -310,16 +314,48 @@ any frontend changes:
   yet is shown honestly as offline rather than continuing to display
   fabricated numbers — see the honesty behavior in
   `iot_registry.get_sensors()`.
-- **MQTT** (mentioned in the original spec) is not implemented — the
-  intended path is a small bridge service that subscribes to your MQTT
-  broker and forwards each message to the REST endpoint above, so the
-  FastAPI app itself never needs an MQTT client.
+- **MQTT** is implemented (`backend/app/mqtt_client.py`): the FastAPI app
+  connects to an EMQX Cloud broker over TLS and subscribes to
+  `hydromind/esp32/data`. Every ESP32 sensor payload is merged into the
+  simulation (`sensor_simulator.merge_with_real_data`) and fed into the
+  registry above (`iot_registry.record_esp32_data`), so a real device
+  transparently overrides the corresponding simulated sensor.
 
 ```bash
 curl -X POST http://localhost:8000/iot/mode -H "Content-Type: application/json" -d '{"mode": "live"}'
 curl -X POST http://localhost:8000/iot/sensors/ph/reading \
   -H "Content-Type: application/json" \
   -d '{"value": 6.1, "battery_level": 88, "signal_strength": 95}'
+```
+
+### Pump control (ESP32 relays)
+
+The ESP32 DevKit V1 drives two relays directly:
+
+| Relay | Pump | GPIO |
+|---|---|---|
+| Relay 1 | Main Pump | GPIO23 |
+| Relay 2 | pH Pump | GPIO22 |
+
+Firmware: `firmware/esp32/hydromind_esp32.ino` (WiFi + MQTT over TLS to the
+same EMQX broker as the backend). It subscribes to `hydromind/esp32/control`
+for ON/OFF commands and reports current relay state (`mainPump`, `phPump`)
+alongside every sensor publish on `hydromind/esp32/data`.
+
+The dashboard's Live Monitoring page has a **Pump Control** panel (Main Pump
+/ pH Pump ON/OFF buttons) backed by:
+
+- **`GET /iot/pumps`** — commanded/device-confirmed state for both pumps
+  (`backend/app/services/pump_registry.py`).
+- **`POST /iot/control`** with `{"pump": "mainPump", "state": true}`
+  (`pump` is `mainPump` or `phPump`) — publishes the command to
+  `hydromind/esp32/control` and optimistically records it; the record is
+  overwritten with the device-confirmed state once the ESP32 echoes its
+  relay status back on `hydromind/esp32/data`.
+
+```bash
+curl -X POST http://localhost:8000/iot/control -H "Content-Type: application/json" -d '{"pump": "mainPump", "state": true}'
+curl http://localhost:8000/iot/pumps
 ```
 
 ## Cloud Deployment (Vercel + Render)

@@ -59,8 +59,12 @@ export default function SensorConnectivityPage() {
       <p className="section-sub">{t("sensors.intro")}</p>
 
       <div className="card flex items-center justify-between wrap gap-16" style={{ marginBottom: 20 }}>
-        <span className={`badge ${mode === "live" ? "badge-good" : "badge-warning"}`}>
-          {mode === "live" ? `🟢 ${t("sensors.liveDataMode")}` : `🟡 ${t("sensors.simulationMode")}`}
+        <span className={`badge ${mode === "simulation" ? "badge-warning" : "badge-good"}`}>
+          {mode === "simulation"
+            ? `🟡 ${t("sensors.simulationMode")}`
+            : mode === "hybrid"
+            ? `🟢 ${t("sensors.hybridDataMode")}`
+            : `🟢 ${t("sensors.liveDataMode")}`}
         </span>
         <button className="btn btn-sm" onClick={toggleMode} disabled={switching}>
           {switching ? <span className="spinner" /> : null}

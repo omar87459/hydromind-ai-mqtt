@@ -303,6 +303,7 @@
   "sensors": {
     "intro": "Simulated connections to real IoT hardware — every sensor device, its live reading, and its connection health.",
     "liveDataMode": "Live Sensor Data",
+    "hybridDataMode": "Live + Simulated (Hybrid)",
     "simulationMode": "Simulation Mode",
     "switchToLive": "Switch to Live Mode",
     "switchToSimulation": "Switch to Simulation Mode",

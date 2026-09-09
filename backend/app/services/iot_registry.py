@@ -82,7 +82,7 @@ def _derive_health(battery: float, signal: float, connection_status: str) -> str
 
 def _tick_sensors():
     for sensor_type, rec in _state["sensors"].items():
-        if rec["data_source"] == "live":
+        if rec["data_source"] == "esp32":
             continue  # never overwrite a real device's data with simulated drift
 
         lo, hi = SENSOR_DEFS[sensor_type]["range"]
@@ -120,15 +120,15 @@ def get_mode() -> str:
 
 
 def set_mode(mode: str) -> str:
-    if mode not in ("simulation", "live"):
-        raise ValueError("mode must be 'simulation' or 'live'")
+    if mode not in ("simulation", "live", "hybrid"):
+        raise ValueError("mode must be 'simulation', 'hybrid' or 'live'")
     _ensure_init()
     _state["mode"] = mode
     if mode == "simulation":
         # Switching back to simulation means "simulate everything fresh" —
-        # clear any data_source="live" flag left over from a previous real
-        # POST, otherwise that sensor would stay frozen forever even though
-        # the rest of the fleet resumes ticking.
+        # clear any data_source="esp32" flag left over from a previous real
+        # reading, otherwise that sensor would stay frozen forever even
+        # though the rest of the fleet resumes ticking.
         for rec in _state["sensors"].values():
             rec["data_source"] = "simulation"
     return _state["mode"]
@@ -136,13 +136,17 @@ def set_mode(mode: str) -> str:
 
 def get_sensors() -> list:
     _ensure_init()
-    if _state["mode"] == "simulation":
+    if _state["mode"] in ("simulation", "hybrid"):
+        # Hybrid keeps ticking too — it only skips sensors already marked
+        # data_source="esp32" (see _tick_sensors), so real readings stay put
+        # while sensors the ESP32 hasn't reported yet keep simulating.
         _tick_sensors()
     else:
-        # Live mode is honest: a sensor that has never received a real POST
-        # shows as offline rather than continuing to display fabricated data.
+        # Live mode is honest: a sensor that has never received a real
+        # reading shows as offline rather than continuing to display
+        # fabricated data.
         for rec in _state["sensors"].values():
-            if rec["data_source"] != "live":
+            if rec["data_source"] != "esp32":
                 rec["connection_status"] = "offline"
                 rec["health_status"] = "fault_detected"
     return list(_state["sensors"].values())
@@ -181,5 +185,32 @@ def record_live_reading(
         rec["battery_level"], rec.get("signal_strength", 100), rec["connection_status"]
     )
     rec["last_update"] = _now()
-    rec["data_source"] = "live"
+    rec["data_source"] = "esp32"
+    if _state["mode"] == "simulation":
+        # A real reading arrived while nothing had switched modes yet —
+        # promote to hybrid automatically so the frontend stops reporting
+        # pure simulation the moment live ESP32 data shows up.
+        _state["mode"] = "hybrid"
     return rec
+
+
+def record_esp32_data(data: dict) -> None:
+    """
+    Bridge point for the ESP32 → EMQX → MQTT pipeline (see mqtt_client.py /
+    mqtt_data.py). Called on every real MQTT payload with the raw sensor
+    dict, e.g. {"ph": 3.78, "water_temp": 18.5, ...}.
+
+    Every key that matches a known sensor type overrides that sensor's
+    registry record and is marked data_source="esp32". Keys the payload
+    doesn't include (a sensor not yet installed) are left untouched, so
+    get_sensors() keeps simulating them — that's the hybrid behavior.
+    """
+    _ensure_init()
+    for sensor_type, value in data.items():
+        if sensor_type not in SENSOR_DEFS:
+            continue
+        try:
+            value = float(value)
+        except (TypeError, ValueError):
+            continue
+        record_live_reading(sensor_type, value)

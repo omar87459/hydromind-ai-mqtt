@@ -75,6 +75,9 @@ def post_sensor_reading(
     sensor_id: str,
     payload: IoTReadingRequest
 ):
+    """
+    Real hardware integration point.
+    """
 
     record = iot_registry.record_live_reading(
         sensor_id,
@@ -98,8 +101,12 @@ def post_sensor_reading(
 def get_pumps():
     """
     Current pump states.
-    Main Pump GPIO23
-    pH Pump GPIO22
+
+    Main Pump:
+    GPIO23
+
+    pH Pump:
+    GPIO22
     """
 
     return {
@@ -118,11 +125,11 @@ def post_control(
     Requires password before sending MQTT command.
     """
 
-    # Password protection
     correct_password = os.getenv(
         "PUMP_CONTROL_PASSWORD",
         "hydro100"
     )
+
 
     if payload.password != correct_password:
         raise HTTPException(
@@ -138,7 +145,6 @@ def post_control(
         )
 
     except ValueError as exc:
-
         raise HTTPException(
             status_code=400,
             detail=str(exc)

@@ -22,7 +22,8 @@
       "noTargetSet": "No target set",
       "connected": "Connected",
       "weakSignal": "Weak Signal",
-      "offline": "Offline"
+      "offline": "Offline",
+      "simulation": "Simulation"
     },
     "health": {
       "excellent": "Excellent",
@@ -305,6 +306,7 @@
     "title": "Pump Control",
     "mainPump": "Main Pump",
     "phPump": "pH Pump",
+    "refillPump": "Refill Pump",
     "turnOn": "Turn On",
     "turnOff": "Turn Off",
     "updating": "Updating…",
@@ -312,12 +314,13 @@
     "pendingConfirmation": "Command sent — waiting for device confirmation"
   },
   "sensors": {
-    "intro": "Simulated connections to real IoT hardware — every sensor device, its live reading, and its connection health.",
+    "intro": "Live status for every sensor on the ESP32 — clearly marked as real, connected hardware or simulation.",
     "liveDataMode": "Live Sensor Data",
     "hybridDataMode": "Live + Simulated (Hybrid)",
-    "simulationMode": "Simulation Mode",
+    "simulationMode": "Simulating Unconnected Sensors",
     "switchToLive": "Switch to Live Mode",
-    "switchToSimulation": "Switch to Simulation Mode",
+    "switchToSimulation": "Simulate Unconnected Sensors",
+    "modeToggleNote": "This only affects sensors with no hardware installed yet. Connected ESP32 sensors always show their real reading, no matter what this is set to.",
     "sensorId": "Sensor ID",
     "reading": "Reading",
     "lastUpdate": "Last Update",
@@ -328,6 +331,12 @@
     "diagnosticsTitle": "AI Sensor Diagnostics",
     "diagnosticsEmpty": "All sensors are reporting normally — no issues detected.",
     "noLiveData": "No live device connected yet — waiting for a real ESP32 reading.",
+    "liveSectionTitle": "Sensor Connections & Live Monitoring",
+    "simulatedSectionTitle": "Simulation / Not Yet Connected",
+    "simulatedSectionIntro": "These devices have no hardware installed yet — values shown are simulated, never real readings.",
+    "calibration": "Calibration",
+    "calibrationOk": "OK (default curve)",
+    "calibrationCheck": "Check calibration",
     "names": {
       "ph": "pH Sensor",
       "ec": "EC Sensor",
@@ -350,6 +359,15 @@
     }
   },
   "energy": {
+    "powerDashboard": {
+      "title": "Power Dashboard",
+      "subtitle": "Live WCMCU-3221 voltage/current/power readings for the two connected pump relays — real hardware, not simulated.",
+      "mainPump": "Main Pump",
+      "refillPump": "Refill Pump",
+      "energy": "Energy",
+      "status": "Status",
+      "futureNote": "WCMCU module #2 (future nutrient pumps, LED lighting, cooling fan) isn't installed yet — those loads stay in the Simulation section until wired."
+    },
     "deviceNames": {
       "main_pump": "Main Water Pump",
       "nutrient_pump": "Nutrient Pump",
@@ -468,6 +486,23 @@
       "efficiencyPct": "Energy Efficiency",
       "monthlySavings": "Monthly Savings",
       "todaysAiDecisions": "Today's AI Decisions"
+    }
+  },
+  "hardware": {
+    "running": "Running",
+    "stopped": "Stopped",
+    "notInstalled": "Not installed",
+    "simulatedValue": "{{value}} simulated",
+    "simulated": {
+      "ledLighting": "LED Lighting",
+      "nutrientPump": "Nutrient Pumps",
+      "phDosingPump": "pH Dosing Pump",
+      "coolingFan": "Cooling Fan",
+      "bh1750": "BH1750 Light Sensor",
+      "ultrasonic": "Ultrasonic Water Level"
+    },
+    "notes": {
+      "waterLevelTemporary": "Temporary analog probe (GPIO32) — ultrasonic sensor planned"
     }
   }
 }

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useApp } from "../context/AppContext";
-import { fetchSensorData, postAnalyze, postRecommendAction, fetchIotPumps, postIotControl } from "../api";
+import { fetchSensorData, postAnalyze, postRecommendAction, fetchIotPumps, postIotControl, fetchMqttData } from "../api";
 import { LoadingBlock, ErrorBlock } from "../components/common/AsyncState";
 import SensorGrid from "../components/monitoring/SensorGrid";
 import SensorTrendChart from "../components/monitoring/SensorTrendChart";
@@ -9,6 +9,7 @@ import IssuesPanel from "../components/monitoring/IssuesPanel";
 import MLPredictionPanel from "../components/monitoring/MLPredictionPanel";
 import ControlPanel from "../components/automation/ControlPanel";
 import PumpControlPanel from "../components/automation/PumpControlPanel";
+import PowerDashboard from "../components/energy/PowerDashboard";
 import { deriveAutomationSuggestions } from "../utils/automation";
 
 const POLL_INTERVAL_MS = 5000;
@@ -48,6 +49,7 @@ export default function MonitoringPage() {
   const [mlError, setMlError] = useState(null);
   const [pumps, setPumps] = useState(DEFAULT_PUMPS);
   const [pumpPending, setPumpPending] = useState({});
+  const [mqttData, setMqttData] = useState(null);
 
   const tickRef = useRef(0);
   const selectedCrop = crops.find((c) => c.id === selectedCropId);
@@ -146,8 +148,10 @@ export default function MonitoringPage() {
 
     async function pollPumps() {
       try {
-        const { pumps: latest } = await fetchIotPumps();
-        if (!cancelled) setPumps((prev) => ({ ...prev, ...latest }));
+        const [{ pumps: latest }, mqtt] = await Promise.all([fetchIotPumps(), fetchMqttData()]);
+        if (cancelled) return;
+        setPumps((prev) => ({ ...prev, ...latest }));
+        setMqttData(mqtt);
       } catch {
         // Pump status is best-effort; the sensor poll above already surfaces backend errors.
       }
@@ -281,6 +285,10 @@ export default function MonitoringPage() {
 
           <div className="mt-16">
             <PumpControlPanel pumps={pumps} pending={pumpPending} onToggle={handlePumpToggle} />
+          </div>
+
+          <div className="mt-16">
+            <PowerDashboard mqttData={mqttData} />
           </div>
 
           <div className="mt-16">

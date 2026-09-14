@@ -1,25 +1,19 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Droplets, FlaskConical } from "lucide-react";
+import { Droplets, Waves } from "lucide-react";
+import ConnectionBadge from "../common/ConnectionBadge";
 
+// key: the API/relay identifier (unchanged, for backend compatibility —
+// the ESP32 and backend still speak "phPump"). labelKey: what the UI
+// calls it now that the old pH pump was physically converted into the
+// refill pump relay (GPIO19).
 const PUMPS = [
-  { key: "mainPump", icon: Droplets },
-  { key: "phPump", icon: FlaskConical },
+  { key: "mainPump", labelKey: "mainPump", icon: Droplets },
+  { key: "phPump", labelKey: "refillPump", icon: Waves },
 ];
 
 export default function PumpControlPanel({ pumps, pending, onToggle }) {
   const { t } = useTranslation();
-  const [password, setPassword] = useState("");
-
-  const handleToggle = (key, state) => {
-    if (!password) {
-      alert("Enter pump password");
-      return;
-    }
-
-    onToggle(key, state, password);
-  };
-
   const [password, setPassword] = useState("");
 
   const handleToggle = (key, state) => {
@@ -37,7 +31,6 @@ export default function PumpControlPanel({ pumps, pending, onToggle }) {
         <h3>{t("pumpControl.title")}</h3>
       </div>
 
-
       <div className="mt-8">
         <input
           type="password"
@@ -49,22 +42,11 @@ export default function PumpControlPanel({ pumps, pending, onToggle }) {
       </div>
 
       <div className="grid grid-cols-2 gap-12 mt-12">
-
-<div className="mt-8">
-  <input
-    type="password"
-    placeholder="Pump password"
-    value={password}
-    onChange={(e) => setPassword(e.target.value)}
-    className="input"
-  />
-</div>
-      <div className="grid grid-cols-2 gap-12">
-
-        {PUMPS.map(({ key, icon: Icon }) => {
+        {PUMPS.map(({ key, labelKey, icon: Icon }) => {
           const pump = pumps[key];
           const isOn = !!pump?.state;
           const isPending = !!pending[key];
+          const confirmed = pump?.source === "esp32";
 
           return (
             <div
@@ -78,64 +60,30 @@ export default function PumpControlPanel({ pumps, pending, onToggle }) {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-8">
                   <Icon size={16} color="var(--brand-blue)" />
-
-                  <span
-                    style={{
-                      fontWeight: 600,
-                      fontSize: 13.5
-                    }}
-                  >
-                    {t(`pumpControl.${key}`)}
-                  </span>
+                  <span style={{ fontWeight: 600, fontSize: 13.5 }}>{t(`pumpControl.${labelKey}`)}</span>
                 </div>
 
-                <span
-                  className={`badge ${
-                    isOn ? "badge-good" : "badge-neutral"
-                  }`}
-                >
-                  {isOn
-                    ? t("common.on")
-                    : t("common.off")}
+                <span className={`badge ${isOn ? "badge-good" : "badge-neutral"}`}>
+                  {isOn ? t("common.on") : t("common.off")}
                 </span>
               </div>
 
-
               <button
-                className={`btn btn-sm btn-block mt-8 ${
-                  isOn ? "" : "btn-primary"
-                }`}
+                className={`btn btn-sm btn-block mt-8 ${isOn ? "" : "btn-primary"}`}
                 disabled={isPending}
-
-                onClick={() =>
-                  handleToggle(
-                    key,
-                    !isOn
-                  )
-                }
-
                 onClick={() => handleToggle(key, !isOn)}
-
               >
-                {isPending
-                  ? t("pumpControl.updating")
-                  : isOn
-                  ? t("pumpControl.turnOff")
-                  : t("pumpControl.turnOn")}
+                {isPending ? t("pumpControl.updating") : isOn ? t("pumpControl.turnOff") : t("pumpControl.turnOn")}
               </button>
 
-
-              {pump?.source &&
-                pump.source !== "default" && (
-                  <div
-                    className="text-muted mt-8"
-                    style={{ fontSize: 11 }}
-                  >
-                    {pump.source === "esp32"
-                      ? t("pumpControl.confirmed")
-                      : t("pumpControl.pendingConfirmation")}
-                  </div>
-                )}
+              {pump?.source && pump.source !== "default" && (
+                <div className="flex items-center justify-between mt-8">
+                  <span className="text-muted" style={{ fontSize: 11 }}>
+                    {confirmed ? t("pumpControl.confirmed") : t("pumpControl.pendingConfirmation")}
+                  </span>
+                  {confirmed && <ConnectionBadge state="connected" small />}
+                </div>
+              )}
             </div>
           );
         })}

@@ -120,17 +120,18 @@ def get_mode() -> str:
 
 
 def set_mode(mode: str) -> str:
+    """
+    Switches the display mode. Does NOT touch any sensor's data_source —
+    a sensor that has received a real ESP32 reading stays marked "esp32"
+    and keeps showing that real value regardless of this toggle. Real
+    hardware data must never be masked or overwritten by a mode switch;
+    only sensors that have never reported real data are affected by
+    "simulation" (drift, via _tick_sensors) vs "live" (honestly offline).
+    """
     if mode not in ("simulation", "live", "hybrid"):
         raise ValueError("mode must be 'simulation', 'hybrid' or 'live'")
     _ensure_init()
     _state["mode"] = mode
-    if mode == "simulation":
-        # Switching back to simulation means "simulate everything fresh" —
-        # clear any data_source="esp32" flag left over from a previous real
-        # reading, otherwise that sensor would stay frozen forever even
-        # though the rest of the fleet resumes ticking.
-        for rec in _state["sensors"].values():
-            rec["data_source"] = "simulation"
     return _state["mode"]
 
 

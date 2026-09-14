@@ -1,90 +1,68 @@
-import { useTranslation } from "react-i18next";
-import { BatteryMedium, Wifi, Clock, Hash } from "lucide-react";
-
-const CONNECTION_BADGE = {
-  connected: "badge-good",
-  weak_signal: "badge-warning",
-  offline: "badge-critical",
-};
-
-const CONNECTION_DOT = { connected: "🟢", weak_signal: "🟡", offline: "🔴" };
-
-const CONNECTION_KEY = {
-  connected: "connected",
-  weak_signal: "weakSignal",
-  offline: "offline",
-};
-
-const HEALTH_BADGE = {
-  excellent: "badge-good",
-  good: "badge-good",
-  needs_maintenance: "badge-warning",
-  fault_detected: "badge-critical",
-};
-
-const HEALTH_KEY = {
-  excellent: "excellent",
-  good: "good",
-  needs_maintenance: "needsMaintenance",
-  fault_detected: "faultDetected",
-};
+import { Clock } from "lucide-react";
+import ConnectionBadge from "../common/ConnectionBadge";
 
 function secondsAgo(isoTimestamp) {
+  if (!isoTimestamp) return null;
   const diff = (Date.now() - new Date(isoTimestamp).getTime()) / 1000;
   if (diff < 60) return `${Math.max(0, Math.round(diff))}s`;
   return `${Math.round(diff / 60)}m`;
 }
 
-export default function SensorDeviceCard({ sensor }) {
-  const { t } = useTranslation();
-  const name = t(`sensors.names.${sensor.sensor_type}`);
+// Card for one sensor or device. Used for both real, connected hardware
+// (connectionState="connected"/"offline") and simulated/not-yet-installed
+// items (connectionState="simulation") — the same shape, so the dashboard
+// never has to fake a "connected" reading for hardware that isn't there.
+export default function SensorDeviceCard({
+  name,
+  connectionState,
+  value,
+  unit,
+  lastUpdate,
+  lastUpdateLabel,
+  note,
+  lines,
+}) {
+  const ago = secondsAgo(lastUpdate);
 
   return (
     <div className="card">
       <div className="flex items-center justify-between">
         <div style={{ fontWeight: 700, fontSize: 14 }}>{name}</div>
-        <span className={`badge ${CONNECTION_BADGE[sensor.connection_status]}`}>
-          {CONNECTION_DOT[sensor.connection_status]} {t(`common.status.${CONNECTION_KEY[sensor.connection_status]}`)}
-        </span>
-      </div>
-
-      <div className="flex items-center gap-6 text-muted mt-8" style={{ fontSize: 11 }}>
-        <Hash size={11} />
-        {t("sensors.sensorId")}: {sensor.id}
+        <ConnectionBadge state={connectionState} />
       </div>
 
       <div style={{ fontSize: 26, fontWeight: 700, marginTop: 10 }}>
-        {sensor.reading}
-        <span style={{ fontSize: 13, fontWeight: 500, color: "var(--text-muted)" }}>{sensor.unit}</span>
+        {value !== null && value !== undefined && value !== "" ? (
+          <>
+            {value}
+            {unit && <span style={{ fontSize: 13, fontWeight: 500, color: "var(--text-muted)" }}>{unit}</span>}
+          </>
+        ) : (
+          <span style={{ fontSize: 15, fontWeight: 500, color: "var(--text-muted)" }}>—</span>
+        )}
       </div>
 
-      <div className="kv-row mt-8">
-        <span className="kv-label flex items-center gap-6">
-          <Clock size={12} /> {t("sensors.lastUpdate")}
-        </span>
-        <span className="kv-value">{secondsAgo(sensor.last_update)}</span>
-      </div>
-      <div className="kv-row">
-        <span className="kv-label flex items-center gap-6">
-          <BatteryMedium size={12} /> {t("sensors.battery")}
-        </span>
-        <span className="kv-value">{sensor.battery_level}%</span>
-      </div>
-      <div className="kv-row">
-        <span className="kv-label flex items-center gap-6">
-          <Wifi size={12} /> {t("sensors.signal")}
-        </span>
-        <span className="kv-value">{sensor.signal_strength}%</span>
-      </div>
+      {note && (
+        <div className="text-muted mt-8" style={{ fontSize: 11.5, fontStyle: "italic" }}>
+          {note}
+        </div>
+      )}
 
-      <div className="flex items-center justify-between mt-16">
-        <span className="text-muted" style={{ fontSize: 12 }}>
-          {t("sensors.health")}
-        </span>
-        <span className={`badge ${HEALTH_BADGE[sensor.health_status]}`}>
-          {t(`common.health.${HEALTH_KEY[sensor.health_status]}`)}
-        </span>
-      </div>
+      {(lines || []).map((line) => (
+        <div className="kv-row mt-8" key={line.label}>
+          <span className="kv-label">{line.label}</span>
+          <span className="kv-value">{line.value}</span>
+        </div>
+      ))}
+
+      {ago && (
+        <div className="kv-row mt-8">
+          <span className="kv-label flex items-center gap-6">
+            <Clock size={12} /> {lastUpdateLabel}
+          </span>
+          <span className="kv-value">{ago}</span>
+        </div>
+      )}
     </div>
   );
 }

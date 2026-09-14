@@ -12,8 +12,10 @@ import {
   fetchEnergyPredictions,
   fetchEnergyAlerts,
   fetchIotNetworkStatus,
+  fetchMqttData,
 } from "../api";
 import { LoadingBlock, ErrorBlock } from "../components/common/AsyncState";
+import PowerDashboard from "../components/energy/PowerDashboard";
 import LiveMetricsGrid from "../components/energy/LiveMetricsGrid";
 import DeviceEnergyCard from "../components/energy/DeviceEnergyCard";
 import OptimizationPanel from "../components/energy/OptimizationPanel";
@@ -35,6 +37,7 @@ export default function EnergyDashboardPage() {
 
   const [live, setLive] = useState(null);
   const [devices, setDevices] = useState(null);
+  const [mqttData, setMqttData] = useState(null);
   const [mode, setMode] = useState("auto");
   const [recommendations, setRecommendations] = useState([]);
   const [summary, setSummary] = useState(null);
@@ -51,11 +54,16 @@ export default function EnergyDashboardPage() {
 
     async function fastTick() {
       try {
-        const [liveData, deviceData] = await Promise.all([fetchEnergyLive(), fetchEnergyDevices()]);
+        const [liveData, deviceData, mqtt] = await Promise.all([
+          fetchEnergyLive(),
+          fetchEnergyDevices(),
+          fetchMqttData(),
+        ]);
         if (cancelledRef.current) return;
         setLive(liveData);
         setDevices(deviceData.devices);
         setMode(deviceData.mode);
+        setMqttData(mqtt);
         setError(null);
       } catch (err) {
         if (!cancelledRef.current) setError(err.message || "Could not reach the backend.");
@@ -139,9 +147,12 @@ export default function EnergyDashboardPage() {
     <div>
       {error && <ErrorBlock message={error} />}
 
-      <div className="card-title-row">
-        <h3>{t("energy.stats.title")}</h3>
-      </div>
+      <PowerDashboard mqttData={mqttData} />
+
+      <div className="mt-24">
+        <div className="card-title-row">
+          <h3>{t("energy.stats.title")}</h3>
+        </div>
       <div className="grid grid-cols-3">
         {statTiles.map((tile) => (
           <div className="card" key={tile.label}>
@@ -152,6 +163,7 @@ export default function EnergyDashboardPage() {
             <div style={{ fontSize: 20, fontWeight: 700, marginTop: 6 }}>{tile.value}</div>
           </div>
         ))}
+      </div>
       </div>
 
       <div className="mt-24">

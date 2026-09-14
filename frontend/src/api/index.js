@@ -76,6 +76,14 @@ export async function fetchIotSensors() {
   return data;
 }
 
+// Latest merged ESP32 MQTT payload (real sensor + power monitoring data,
+// simulation-filled where hardware isn't installed yet). See
+// backend/app/mqtt_data.py / GET /mqtt/data.
+export async function fetchMqttData() {
+  const { data } = await client.get("/mqtt/data");
+  return data;
+}
+
 export async function fetchIotNetworkStatus() {
   const { data } = await client.get("/iot/network-status");
   return data;

@@ -1,105 +1,114 @@
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Sprout, Droplets, TrendingUp, Activity, MessageCircle, Satellite, ArrowRight } from "lucide-react";
 import { useApp } from "../context/AppContext";
+import { postAnalyze } from "../api";
 import { LoadingBlock, ErrorBlock } from "../components/common/AsyncState";
+import SensorDeviceCard from "../components/sensors/SensorDeviceCard";
+import SystemStatusPanel from "../components/overview/SystemStatusPanel";
+import AiSummaryCard from "../components/overview/AiSummaryCard";
+import { useRealSensors } from "../hooks/useRealSensors";
+import { REAL_SENSOR_TYPES, excludeNeverRealIssues, overallStatusFromIssues } from "../utils/hardwareStatus";
 
-const QUICK_LINKS = [
-  { to: "/crops", icon: Sprout, key: "linkCrops" },
-  { to: "/methods", icon: Droplets, key: "linkMethods" },
-  { to: "/growth", icon: TrendingUp, key: "linkGrowth" },
-  { to: "/monitoring", icon: Activity, key: "linkMonitoring" },
-  { to: "/assistant", icon: MessageCircle, key: "linkAssistant" },
-  { to: "/architecture", icon: Satellite, key: "linkArchitecture" },
-];
+const AI_POLL_INTERVAL_MS = 5000;
 
 export default function OverviewPage() {
   const { t } = useTranslation();
-  const { crops, methods, loading, loadError } = useApp();
+  const { loading, loadError, connectionPhase, selectedCropId, selectedStage } = useApp();
+  const { readings, anyLive, freshestUpdate } = useRealSensors();
+
+  const [aiStatus, setAiStatus] = useState("unknown");
+  const [aiRecommendation, setAiRecommendation] = useState(null);
+  const [aiLoading, setAiLoading] = useState(true);
+  const [aiUnavailable, setAiUnavailable] = useState(true);
+
+  const byType = {};
+  readings.forEach((r) => (byType[r.type] = r));
+  const allRequiredLive = REAL_SENSOR_TYPES.every((type) => byType[type]?.isLive);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function tick() {
+      // AI system must only analyze real sensor data — if any of the 6
+      // real-capable fields hasn't been reported yet, don't call the
+      // backend with a partially-fabricated reading.
+      if (!allRequiredLive) {
+        if (!cancelled) {
+          setAiUnavailable(true);
+          setAiLoading(false);
+        }
+        return;
+      }
+
+      const reading = {};
+      REAL_SENSOR_TYPES.forEach((type) => (reading[type] = byType[type].value));
+      // Required by the backend's SensorReading model but never real —
+      // excludeNeverRealIssues/overallStatusFromIssues below strip any
+      // issue this placeholder could otherwise generate.
+      reading.light_intensity = 0;
+
+      try {
+        setAiLoading(true);
+        const analysis = await postAnalyze(selectedCropId, selectedStage, reading);
+        if (cancelled) return;
+        const realIssues = excludeNeverRealIssues(analysis.issues);
+        setAiStatus(overallStatusFromIssues(realIssues));
+        setAiRecommendation(realIssues[0]?.recommended_action || t("overview.aiAllNormal"));
+        setAiUnavailable(false);
+      } catch {
+        if (!cancelled) setAiUnavailable(true);
+      } finally {
+        if (!cancelled) setAiLoading(false);
+      }
+    }
+
+    tick();
+    const interval = setInterval(tick, AI_POLL_INTERVAL_MS);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCropId, selectedStage, allRequiredLive]);
 
   if (loading) return <LoadingBlock label={t("common.loading")} />;
   if (loadError) return <ErrorBlock message={loadError} />;
 
   return (
     <div>
-      <div
-        className="card"
-        style={{
-          background: "linear-gradient(135deg, rgba(42,120,214,0.12), rgba(27,175,122,0.10))",
-          borderColor: "var(--brand-blue)",
-        }}
-      >
-        <div className="badge badge-blue">{t("overview.badge")}</div>
-        <h2 style={{ margin: "10px 0 6px", fontSize: 24 }}>{t("overview.welcome")}</h2>
-        <p className="text-secondary" style={{ fontSize: 13.5, maxWidth: 640, lineHeight: 1.6 }}>
-          {t("overview.intro")}
-        </p>
-      </div>
+      <p className="section-sub">{t("overview.intro")}</p>
 
-      <div className="grid grid-cols-4 mt-16">
-        <div className="card">
-          <div className="text-muted" style={{ fontSize: 12 }}>
-            {t("overview.cropsInDatabase")}
-          </div>
-          <div style={{ fontSize: 26, fontWeight: 700, marginTop: 6 }}>{crops.length}</div>
-        </div>
-        <div className="card">
-          <div className="text-muted" style={{ fontSize: 12 }}>
-            {t("overview.hydroponicMethods")}
-          </div>
-          <div style={{ fontSize: 26, fontWeight: 700, marginTop: 6 }}>{methods.length}</div>
-        </div>
-        <div className="card">
-          <div className="text-muted" style={{ fontSize: 12 }}>
-            {t("overview.monitoredParameters")}
-          </div>
-          <div style={{ fontSize: 26, fontWeight: 700, marginTop: 6 }}>7</div>
-        </div>
-        <div className="card">
-          <div className="text-muted" style={{ fontSize: 12 }}>
-            {t("overview.farmServer")}
-          </div>
-          <div className="flex items-center gap-8 mt-8">
-            <span className="pulse-dot" />
-            <span style={{ fontSize: 15, fontWeight: 700, color: "var(--status-good)" }}>
-              {t("overview.online")}
-            </span>
-          </div>
-        </div>
-      </div>
+      <h3 style={{ marginBottom: 12 }}>{t("overview.systemStatusTitle")}</h3>
+      <SystemStatusPanel
+        serverOnline={connectionPhase === "ready"}
+        esp32Connected={anyLive}
+        lastUpdate={freshestUpdate}
+      />
 
-      <h3 className="mt-24" style={{ marginBottom: 4 }}>
-        {t("overview.explorePlatform")}
+      <h3 className="mt-24" style={{ marginBottom: 12 }}>
+        {t("overview.liveFarmSnapshotTitle")}
       </h3>
-      <div className="grid grid-cols-3 mt-16">
-        {QUICK_LINKS.map(({ to, icon: Icon, key }) => (
-          <Link key={to} to={to} className="card selectable" style={{ textDecoration: "none", color: "inherit" }}>
-            <div className="flex items-center gap-12">
-              <div
-                style={{
-                  width: 38,
-                  height: 38,
-                  borderRadius: "var(--radius-sm)",
-                  background: "var(--status-good-bg)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "var(--brand-aqua)",
-                  flexShrink: 0,
-                }}
-              >
-                <Icon size={18} />
-              </div>
-              <div style={{ fontWeight: 700, fontSize: 14 }}>{t(`overview.${key}Title`)}</div>
-            </div>
-            <p className="text-secondary mt-8" style={{ fontSize: 12.5, lineHeight: 1.5 }}>
-              {t(`overview.${key}Desc`)}
-            </p>
-            <div className="flex items-center gap-6" style={{ fontSize: 12, color: "var(--brand-blue)", fontWeight: 600 }}>
-              {t("common.open")} <ArrowRight size={13} className="rtl-flip" />
-            </div>
-          </Link>
+      <div className="grid grid-cols-4">
+        {readings.map((r) => (
+          <SensorDeviceCard
+            key={r.type}
+            name={t(`sensors.names.${r.type}`)}
+            connectionState={r.connectionState}
+            value={r.formattedValue}
+            unit={r.unit}
+            lastUpdate={r.lastUpdate}
+            lastUpdateLabel={t("sensors.lastUpdate")}
+          />
         ))}
+      </div>
+
+      <div className="mt-24">
+        <AiSummaryCard
+          status={aiStatus}
+          recommendation={aiRecommendation}
+          loading={aiLoading}
+          unavailable={aiUnavailable}
+        />
       </div>
     </div>
   );

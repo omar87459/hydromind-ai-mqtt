@@ -167,3 +167,16 @@ class EnergyPredictionRequest(BaseModel):
     growth_stage: str = "vegetative"
     active_devices_fraction: float = 1.0
     outdoor_temp_proxy: float = 30.0
+
+
+class LoginRequest(BaseModel):
+    """Body for POST /auth/login."""
+
+    username: str
+    password: str
+
+
+class LoginResponse(BaseModel):
+    role: str  # "admin" | "viewer"
+    username: str
+    token: str

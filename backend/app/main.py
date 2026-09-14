@@ -8,6 +8,7 @@ from .mqtt_client import start_mqtt
 from .routers import (
     analyze,
     assistant,
+    auth,
     crops,
     energy,
     iot,
@@ -55,6 +56,7 @@ def startup_event():
 
 
 # API Routes
+app.include_router(auth.router)
 app.include_router(crops.router)
 app.include_router(methods.router)
 app.include_router(sensors.router)

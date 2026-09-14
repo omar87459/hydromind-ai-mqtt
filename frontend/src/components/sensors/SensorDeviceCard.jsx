@@ -8,10 +8,11 @@ function secondsAgo(isoTimestamp) {
   return `${Math.round(diff / 60)}m`;
 }
 
-// Card for one sensor or device. Used for both real, connected hardware
-// (connectionState="connected"/"offline") and simulated/not-yet-installed
-// items (connectionState="simulation") — the same shape, so the dashboard
-// never has to fake a "connected" reading for hardware that isn't there.
+// Card for one sensor or device. `connectionState` is "connected",
+// "not_connected" (no hardware installed yet), or "offline" (real
+// hardware that's gone quiet) — the same shape either way, so the
+// dashboard never has to fake a "connected" reading for hardware that
+// isn't there.
 export default function SensorDeviceCard({
   name,
   connectionState,

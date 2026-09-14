@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import { Bot, ShieldCheck, Zap } from "lucide-react";
 import StatusBadge from "../common/StatusBadge";
 
-export default function IssuesPanel({ issues, overallStatus, analyzing }) {
+export default function IssuesPanel({ issues, overallStatus, analyzing, unavailable }) {
   const { t } = useTranslation();
   return (
     <div className="card">
@@ -11,10 +11,16 @@ export default function IssuesPanel({ issues, overallStatus, analyzing }) {
           <Bot size={16} />
           {t("monitoring.aiDecisionEngine")}
         </h3>
-        {analyzing ? <span className="spinner" /> : <StatusBadge status={overallStatus} />}
+        {analyzing ? <span className="spinner" /> : !unavailable && <StatusBadge status={overallStatus} />}
       </div>
 
-      {(!issues || issues.length === 0) && !analyzing && (
+      {unavailable && (
+        <p className="text-secondary" style={{ fontSize: 12.5, margin: 0 }}>
+          {t("common.dataStatus.insufficientData")}
+        </p>
+      )}
+
+      {!unavailable && (!issues || issues.length === 0) && !analyzing && (
         <div className="flex items-center gap-8 text-secondary" style={{ fontSize: 13, padding: "8px 0" }}>
           <ShieldCheck size={16} color="var(--status-good)" />
           {t("monitoring.allIdeal")}

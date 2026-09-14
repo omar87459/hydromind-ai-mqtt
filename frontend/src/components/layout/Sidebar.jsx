@@ -1,31 +1,16 @@
 import { NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import {
-  LayoutDashboard,
-  Sprout,
-  Droplets,
-  TrendingUp,
-  Activity,
-  MessageCircle,
-  Satellite,
-  FlaskConical,
-  Radio,
-  Network,
-  Zap,
-  X,
-} from "lucide-react";
+import { LayoutDashboard, Activity, SlidersHorizontal, Zap, MessageCircle, Satellite, X } from "lucide-react";
 
+// Crops/Methods/Growth Stages/AI Model Lab/Farm Network keep their working
+// routes (see App.jsx) but are intentionally left out of primary nav — the
+// platform's nav is scoped to these 6 pages.
 const NAV_ITEMS = [
   { to: "/", key: "overview", icon: LayoutDashboard, end: true },
-  { to: "/crops", key: "crops", icon: Sprout },
-  { to: "/methods", key: "methods", icon: Droplets },
-  { to: "/growth", key: "growth", icon: TrendingUp },
   { to: "/monitoring", key: "monitoring", icon: Activity },
-  { to: "/assistant", key: "assistant", icon: MessageCircle },
-  { to: "/model-lab", key: "modelLab", icon: FlaskConical },
-  { to: "/sensors", key: "sensors", icon: Radio },
-  { to: "/farm-network", key: "farmNetwork", icon: Network },
+  { to: "/automation", key: "automation", icon: SlidersHorizontal },
   { to: "/energy", key: "energy", icon: Zap },
+  { to: "/assistant", key: "assistant", icon: MessageCircle },
   { to: "/architecture", key: "architecture", icon: Satellite },
 ];
 

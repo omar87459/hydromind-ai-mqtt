@@ -15,6 +15,7 @@
     "off": "OFF",
     "none": "None",
     "confidence": "Confidence",
+    "adminOnly": "Admin only",
     "status": {
       "ideal": "Ideal",
       "warning": "Warning",
@@ -23,7 +24,14 @@
       "connected": "Connected",
       "weakSignal": "Weak Signal",
       "offline": "Offline",
-      "simulation": "Simulation"
+      "notConnected": "Not Connected"
+    },
+    "dataStatus": {
+      "notConnected": "Not Connected",
+      "dataSourceWaiting": "Data Source: Waiting for hardware",
+      "waitingForHardware": "Waiting for hardware",
+      "waitingForRealData": "Waiting for real sensor data",
+      "insufficientData": "Insufficient real sensor data"
     },
     "health": {
       "excellent": "Excellent",
@@ -53,6 +61,42 @@
       "vertical_farming": "Vertical Farming"
     }
   },
+  "auth": {
+    "loginTitle": "Sign in",
+    "loginSubtitle": "Sign in to access the HydroMind AI dashboard.",
+    "username": "Username",
+    "password": "Password",
+    "loginButton": "Log In",
+    "roleHint": "Admin accounts can control devices; Viewer accounts are read-only.",
+    "logout": "Log out",
+    "role": {
+      "admin": "Admin",
+      "viewer": "Viewer"
+    }
+  },
+  "devices": {
+    "mainPump": "Main Pump",
+    "refillPump": "Refill Pump",
+    "phUpPump": "pH Up Pump",
+    "phDownPump": "pH Down Pump",
+    "nutrientPumpA": "Nutrient Pump A",
+    "nutrientPumpB": "Nutrient Pump B",
+    "ledGrowLight": "LED Grow Light",
+    "esp32Controller": "ESP32 Controller"
+  },
+  "automation": {
+    "intro": "Device control only — turn real hardware on or off, or see what's not connected yet.",
+    "viewerNote": "You're signed in as a Viewer. Device control is available to Admin accounts only.",
+    "enterPassword": "Enter the pump control password first.",
+    "autoUnavailable": "Not available — no automation backend for this device yet.",
+    "auto": "AUTO",
+    "controlSource": "Control Source",
+    "manual": "Manual",
+    "lastAction": "Last Action",
+    "brightness": "Brightness",
+    "wrongPassword": "Wrong pump password.",
+    "controlFailed": "Device control failed."
+  },
   "nav": {
     "brandName": "HydroMind AI",
     "brandTag": "Smart Hydroponic Platform",
@@ -60,7 +104,8 @@
     "crops": "Crop Database",
     "methods": "Hydroponic Methods",
     "growth": "Growth Stages",
-    "monitoring": "Live Monitoring",
+    "monitoring": "Live Monitoring & AI Analysis",
+    "automation": "Automation Control Panel",
     "assistant": "AI Knowledge Assistant",
     "modelLab": "AI Model Lab",
     "sensors": "Sensor Connectivity",
@@ -81,8 +126,10 @@
     "methodsSubtitle": "Compare systems and find compatible crops for each method.",
     "growthTitle": "Interactive Growth Stages",
     "growthSubtitle": "See how targets shift across the crop lifecycle.",
-    "monitoringTitle": "AI Monitoring & Automation",
-    "monitoringSubtitle": "Live sensor readings, AI decision engine, and automation controls.",
+    "monitoringTitle": "Live Monitoring & AI Analysis",
+    "monitoringSubtitle": "Live sensor readings, AI decision engine, and ML health prediction.",
+    "automationTitle": "Automation Control Panel",
+    "automationSubtitle": "Device control — Main Pump, Refill Pump, and every not-yet-connected device.",
     "assistantTitle": "AI Knowledge Assistant",
     "assistantSubtitle": "Ask about hydroponics — answered from a local knowledge base.",
     "modelLabTitle": "AI Model Lab",
@@ -94,12 +141,20 @@
     "farmNetworkTitle": "Farm Connectivity Overview",
     "farmNetworkSubtitle": "Live status of the full sensor-to-cloud pipeline.",
     "energyTitle": "Energy Dashboard",
-    "energySubtitle": "Real-time power monitoring, AI-driven optimization, and energy savings."
+    "energySubtitle": "Real WCMCU-3221 power monitoring for connected pumps."
   },
   "overview": {
+    "intro": "A real-time snapshot of your hydroponic farm — system status, live sensor readings, and an AI summary, all from real hardware.",
+    "systemStatusTitle": "System Status",
+    "liveFarmSnapshotTitle": "Live Farm Snapshot",
+    "aiSummaryTitle": "AI Summary",
+    "aiAllNormal": "All monitored parameters are within the ideal range.",
+    "farmServerStatus": "Farm Server",
+    "esp32Status": "ESP32 Connection",
+    "mqttStatus": "MQTT Status",
+    "lastUpdate": "Last Data Update",
     "badge": "AI-Powered Smart Agriculture",
     "welcome": "Welcome to HydroMind AI",
-    "intro": "Select a hydroponic method, choose a crop, monitor live sensor readings, and get AI-generated recommendations to keep every growth stage on target.",
     "cropsInDatabase": "Crops in Database",
     "hydroponicMethods": "Hydroponic Methods",
     "monitoredParameters": "Monitored Parameters",
@@ -113,7 +168,7 @@
     "linkGrowthTitle": "Growth Stages",
     "linkGrowthDesc": "Seedling through harvest, with targets that update per crop and stage.",
     "linkMonitoringTitle": "Live Monitoring & Automation",
-    "linkMonitoringDesc": "Simulated IoT sensors, AI decision engine, and control panel.",
+    "linkMonitoringDesc": "Real ESP32 sensors, AI decision engine, and ML health prediction.",
     "linkAssistantTitle": "AI Knowledge Assistant",
     "linkAssistantDesc": "Ask hydroponic questions, answered from a local knowledge base.",
     "linkArchitectureTitle": "System Architecture",
@@ -164,7 +219,7 @@
     "aiNotesTitle": "AI Notes for this stage"
   },
   "monitoring": {
-    "intro": "Simulated IoT sensors refresh every {{seconds}}s and are compared against {{stage}} targets for the selected crop.",
+    "intro": "Real ESP32 sensors refresh every {{seconds}}s and are compared against {{stage}} targets for the selected crop.",
     "liveTag": "Live",
     "sensorTrend": "Sensor Trend — {{param}}",
     "aiDecisionEngine": "AI Decision Engine",
@@ -172,13 +227,11 @@
     "confidencePct": "{{pct}}% confidence",
     "automaticAction": "⚙ Automatic action: {{action}}",
     "mlHealthPrediction": "ML Health Prediction",
+    "aiPredictionUnavailable": "AI prediction unavailable — waiting for data",
     "riskScore": "Risk Score",
     "detectedProblem": "Detected problem",
     "recommendedAction": "Recommended action",
     "safetyOverride": "Safety Override",
-    "automationPanel": "Automation Control Panel",
-    "aiSuggests": "AI suggests {{state}} — {{reason}}",
-    "toggleDevice": "Toggle {{device}}",
     "params": {
       "ph": "pH",
       "ec": "EC",
@@ -187,21 +240,6 @@
       "humidity": "Humidity",
       "water_level": "Water Level",
       "light_intensity": "Light Intensity"
-    },
-    "devices": {
-      "main_pump": "Main Water Pump",
-      "nutrient_pump": "Nutrient Pump",
-      "ph_pump": "pH Dosing Pump",
-      "grow_lights": "Grow Lights",
-      "cooling_fan": "Cooling Fan"
-    },
-    "reasons": {
-      "mainPumpLow": "Water level is low — keep the pump running and schedule a reservoir refill.",
-      "mainPumpOk": "Maintains circulation and oxygenation of the nutrient solution.",
-      "nutrientOk": "EC is within range — no dosing needed.",
-      "phOk": "pH is within range — dosing pump idle.",
-      "lightsOk": "Light intensity is within target for this stage.",
-      "fanOk": "Temperatures are within range — fan idle."
     }
   },
   "assistant": {
@@ -287,7 +325,7 @@
   "architecture": {
     "intro": "A conceptual view of how HydroMind AI would connect a farm's sensors to the cloud and, where needed, satellite connectivity.",
     "noticeTitle": "Concept / Prototype Notice",
-    "noticeBody": "This diagram illustrates the intended production architecture. In this hackathon prototype, sensor data is simulated locally and the \"cloud\" and \"satellite\" layers are <1>not actually implemented</1> — there is no real satellite hardware or communication link. The idea is to show how HydroMind AI would scale to real farms, including remote locations with unreliable internet, where a local farm server keeps monitoring and automation running independently and relays only critical alerts over a low-bandwidth satellite channel when needed.",
+    "noticeBody": "This diagram illustrates the intended production architecture. In this hackathon prototype, the \"cloud\" and \"satellite\" layers are <1>not actually implemented</1> — there is no real satellite hardware or communication link. Only real connected hardware data is displayed. Unconnected hardware remains unavailable until installed. The idea is to show how HydroMind AI would scale to real farms, including remote locations with unreliable internet, where a local farm server keeps monitoring and automation running independently and relays only critical alerts over a low-bandwidth satellite channel when needed.",
     "whyLocalTitle": "Why local-first?",
     "whyLocalBody": "The local farm server can run the AI Decision Engine and automation loop even if the internet connection is completely down, so crops are never left unmonitored.",
     "whyCloudTitle": "Why the cloud layer?",
@@ -314,13 +352,7 @@
     "pendingConfirmation": "Command sent — waiting for device confirmation"
   },
   "sensors": {
-    "intro": "Live status for every sensor on the ESP32 — clearly marked as real, connected hardware or simulation.",
-    "liveDataMode": "Live Sensor Data",
-    "hybridDataMode": "Live + Simulated (Hybrid)",
-    "simulationMode": "Simulating Unconnected Sensors",
-    "switchToLive": "Switch to Live Mode",
-    "switchToSimulation": "Simulate Unconnected Sensors",
-    "modeToggleNote": "This only affects sensors with no hardware installed yet. Connected ESP32 sensors always show their real reading, no matter what this is set to.",
+    "intro": "Live status for every sensor on the ESP32 — clearly marked as real, connected hardware or Not Connected.",
     "sensorId": "Sensor ID",
     "reading": "Reading",
     "lastUpdate": "Last Update",
@@ -330,13 +362,6 @@
     "connection": "Connection",
     "diagnosticsTitle": "AI Sensor Diagnostics",
     "diagnosticsEmpty": "All sensors are reporting normally — no issues detected.",
-    "noLiveData": "No live device connected yet — waiting for a real ESP32 reading.",
-    "liveSectionTitle": "Sensor Connections & Live Monitoring",
-    "simulatedSectionTitle": "Simulation / Not Yet Connected",
-    "simulatedSectionIntro": "These devices have no hardware installed yet — values shown are simulated, never real readings.",
-    "calibration": "Calibration",
-    "calibrationOk": "OK (default curve)",
-    "calibrationCheck": "Check calibration",
     "names": {
       "ph": "pH Sensor",
       "ec": "EC Sensor",
@@ -359,89 +384,37 @@
     }
   },
   "energy": {
+    "intro": "Power and energy only — real WCMCU-3221 measurements for connected pumps, and every not-yet-connected device shown honestly.",
+    "tabs": {
+      "power": "Power Dashboard",
+      "consumption": "Device Energy Consumption",
+      "smartControl": "Smart Control"
+    },
     "powerDashboard": {
       "title": "Power Dashboard",
       "subtitle": "Live WCMCU-3221 voltage/current/power readings for the two connected pump relays — real hardware, not simulated.",
       "mainPump": "Main Pump",
       "refillPump": "Refill Pump",
       "energy": "Energy",
-      "status": "Status",
-      "futureNote": "WCMCU module #2 (future nutrient pumps, LED lighting, cooling fan) isn't installed yet — those loads stay in the Simulation section until wired."
+      "status": "Status"
     },
-    "deviceNames": {
-      "main_pump": "Main Water Pump",
-      "nutrient_pump": "Nutrient Pump",
-      "air_pump": "Air Pump",
-      "led_lights": "LED Grow Lights",
-      "cooling_fan": "Cooling Fan",
-      "water_chiller": "Water Chiller",
-      "optional_device": "Optional Device"
+    "consumption": {
+      "title": "Device Energy Consumption",
+      "subtitle": "No energy-history endpoint exists yet for any device, real or not — every figure below is a placeholder.",
+      "device": "Device",
+      "today": "Today",
+      "week": "Week",
+      "month": "Month",
+      "note": "This section will populate once the backend adds energy history tracking — nothing here is estimated or simulated."
     },
-    "status": {
-      "Normal": "Normal",
-      "Warning": "Warning",
-      "Critical": "Critical"
+    "smartControl": {
+      "aiAutomation": "Enable AI Automatic Control",
+      "aiAutomationNote": "Not available — no automation backend connected yet."
     },
     "liveMetrics": {
-      "title": "Real-Time Energy Monitoring",
       "voltage": "Voltage",
       "current": "Current",
-      "power": "Power",
-      "energy": "Energy Consumption",
-      "frequency": "Frequency",
-      "powerFactor": "Power Factor",
-      "systemStatus": "System Status"
-    },
-    "devices": {
-      "title": "Device Energy Consumption",
-      "currentPower": "Current Power",
-      "dailyEnergy": "Daily Energy",
-      "monthlyEnergy": "Monthly Energy",
-      "runningTime": "Running Time",
-      "on": "ON",
-      "off": "OFF"
-    },
-    "optimization": {
-      "title": "AI Energy Optimization",
-      "intro": "The AI continuously analyzes sensor data and energy usage to find savings.",
-      "expectedSaving": "Expected Energy Saving",
-      "costSaving": "Estimated Cost Saving",
-      "confidence": "AI Confidence Level",
-      "empty": "No optimization recommendations right now — the system is running efficiently.",
-      "perDay": "/day"
-    },
-    "summary": {
-      "title": "Energy Saving Summary",
-      "todaySaved": "Today's Energy Saved",
-      "monthlySaved": "Monthly Energy Saved",
-      "annualSaved": "Annual Energy Saved",
-      "costSaved": "Estimated Electricity Cost Saved",
-      "co2Reduced": "Estimated CO₂ Emissions Reduced",
-      "efficiencyScore": "Efficiency Score"
-    },
-    "history": {
-      "title": "Historical Analytics",
-      "daily": "Daily",
-      "weekly": "Weekly",
-      "monthly": "Monthly",
-      "deviceComparison": "Device Comparison",
-      "peakHours": "Peak Hours",
-      "startDate": "Start Date",
-      "endDate": "End Date",
-      "apply": "Apply",
-      "totalEnergy": "Total Energy",
-      "totalCost": "Total Cost"
-    },
-    "predictions": {
-      "title": "AI Prediction",
-      "intro": "A trained machine learning model forecasts upcoming consumption from historical patterns.",
-      "nextDay": "Tomorrow's Predicted Usage",
-      "nextWeek": "Next Week's Predicted Usage",
-      "anomaliesTitle": "Abnormal Consumption",
-      "equipmentRiskTitle": "Equipment Risk",
-      "noAnomalies": "No abnormal consumption detected.",
-      "noEquipmentRisk": "No equipment risk detected.",
-      "confidence": "Prediction Confidence"
+      "power": "Power"
     },
     "growthStage": {
       "title": "Growth Stage Energy Optimization",
@@ -451,56 +424,11 @@
       "cooling": "Cooling",
       "ventilation": "Ventilation",
       "currentStageTarget": "Current stage target"
-    },
-    "alerts": {
-      "title": "Smart Alerts",
-      "empty": "No active alerts — everything is operating normally.",
-      "equipmentRisksTitle": "Equipment Risks"
-    },
-    "connectivity": {
-      "title": "Satellite & IoT Status"
-    },
-    "reports": {
-      "title": "Reports",
-      "intro": "Generate downloadable reports for any period.",
-      "daily": "Daily Energy Report",
-      "weekly": "Weekly Report",
-      "monthly": "Monthly Report",
-      "cost": "Cost Analysis",
-      "efficiency": "Energy Efficiency Report",
-      "downloadPdf": "Download PDF",
-      "downloadExcel": "Download Excel",
-      "generating": "Generating…"
-    },
-    "controls": {
-      "title": "Smart Controls",
-      "aiAutoMode": "AI Auto Mode",
-      "manualOverride": "Manual Override",
-      "brightness": "LED Brightness"
-    },
-    "stats": {
-      "title": "Dashboard Statistics",
-      "totalDevices": "Total Connected Devices",
-      "activeDevices": "Active Devices",
-      "avgDailyConsumption": "Average Daily Consumption",
-      "efficiencyPct": "Energy Efficiency",
-      "monthlySavings": "Monthly Savings",
-      "todaysAiDecisions": "Today's AI Decisions"
     }
   },
   "hardware": {
     "running": "Running",
     "stopped": "Stopped",
-    "notInstalled": "Not installed",
-    "simulatedValue": "{{value}} simulated",
-    "simulated": {
-      "ledLighting": "LED Lighting",
-      "nutrientPump": "Nutrient Pumps",
-      "phDosingPump": "pH Dosing Pump",
-      "coolingFan": "Cooling Fan",
-      "bh1750": "BH1750 Light Sensor",
-      "ultrasonic": "Ultrasonic Water Level"
-    },
     "notes": {
       "waterLevelTemporary": "Temporary analog probe (GPIO32) — ultrasonic sensor planned"
     }

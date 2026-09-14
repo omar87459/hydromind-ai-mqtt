@@ -1,5 +1,10 @@
 import client from "./client";
 
+export async function postLogin(username, password) {
+  const { data } = await client.post("/auth/login", { username, password });
+  return data;
+}
+
 export async function fetchCrops() {
   const { data } = await client.get("/crops");
   return data;

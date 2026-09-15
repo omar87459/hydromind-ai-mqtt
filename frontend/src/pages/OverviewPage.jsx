@@ -29,7 +29,7 @@ export default function OverviewPage() {
     let cancelled = false;
 
     async function tick() {
-      // AI system must only analyze real sensor data — if any of the 6
+      // AI system must only analyze real sensor data — if any of the 7
       // real-capable fields hasn't been reported yet, don't call the
       // backend with a partially-fabricated reading.
       if (!allRequiredLive) {
@@ -42,10 +42,6 @@ export default function OverviewPage() {
 
       const reading = {};
       REAL_SENSOR_TYPES.forEach((type) => (reading[type] = byType[type].value));
-      // Required by the backend's SensorReading model but never real —
-      // excludeNeverRealIssues/overallStatusFromIssues below strip any
-      // issue this placeholder could otherwise generate.
-      reading.light_intensity = 0;
 
       try {
         setAiLoading(true);

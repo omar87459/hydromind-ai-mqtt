@@ -89,7 +89,7 @@ export default function MonitoringPage() {
       }
 
       // ML prediction only ever runs on real sensor data — if the ESP32
-      // hasn't reported all 6 real-capable fields yet, show a friendly
+      // hasn't reported all 7 real-capable fields yet, show a friendly
       // "waiting for data" message instead of calling the model on a mix
       // of real and simulated numbers.
       if (selectedCrop && snapshot) {
@@ -110,11 +110,12 @@ export default function MonitoringPage() {
             const quarter = avgCycle / 4;
             const daysAfterPlanting = Math.max(1, Math.round(stageIndex * quarter + quarter / 2));
 
-            // The ML model requires a light_intensity feature but there's
-            // no real light sensor — sending the fabricated MQTT/simulated
-            // value would let it silently skew a real prediction. Assume
-            // the crop stage's own target midpoint instead: a neutral,
-            // documented assumption rather than an arbitrary noisy number.
+            // The ML model requires a light_intensity feature. The BH1750
+            // is real hardware now, but its live reading isn't wired into
+            // this payload yet - assume the crop stage's own target
+            // midpoint instead: a neutral, documented assumption rather
+            // than an arbitrary number. (Wiring in the live lux reading
+            // here is a separate change, out of scope for this fix.)
             const assumedLightIntensity =
               (stageData.light_intensity.min + stageData.light_intensity.max) / 2;
 

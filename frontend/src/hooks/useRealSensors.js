@@ -9,7 +9,7 @@ function formatNumber(n, digits = 2) {
   return Number(n).toFixed(digits);
 }
 
-// Single shared source for "what are the 6 real sensors doing right now" —
+// Single shared source for "what are the 7 real sensors doing right now" —
 // used by both the Overview snapshot and the Live Monitoring page, so
 // there's exactly one implementation of "is this reading real" instead of
 // two that can drift apart. Never returns a fabricated value: a sensor
@@ -57,19 +57,6 @@ export function useRealSensors() {
       unit: sensor?.unit,
       lastUpdate: isLive ? sensor.last_update : null,
     };
-  });
-
-  // Light intensity is never real (no BH1750 installed) regardless of
-  // what the backend reports for it — always the 7th, always Not
-  // Connected. See hardwareStatus.js's NEVER_REAL_SENSOR_TYPES comment.
-  readings.push({
-    type: "light_intensity",
-    isLive: false,
-    connectionState: "not_connected",
-    value: null,
-    formattedValue: null,
-    unit: undefined,
-    lastUpdate: null,
   });
 
   const freshestUpdate =

@@ -10,8 +10,8 @@
 
 // Sensor types (matching the backend's SENSOR_DEFS / mqtt keys) that are
 // real, connected hardware today. Order matches the required display
-// order (pH, EC, Water Temp, Air Temp, Humidity, Water Level) used on
-// both the Overview snapshot and the Live Monitoring page.
+// order (pH, EC, Water Temp, Air Temp, Humidity, Water Level, Light) used
+// on both the Overview snapshot and the Live Monitoring page.
 export const REAL_SENSOR_TYPES = [
   "ph", // GPIO35
   "ec", // GPIO34
@@ -19,15 +19,13 @@ export const REAL_SENSOR_TYPES = [
   "air_temp", // DHT22
   "humidity", // DHT22
   "water_level", // GPIO32 (temporary analog probe, ultrasonic upgrade planned)
+  "light_intensity", // BH1750, I2C (shared bus with WCMCU-3221)
 ];
 
-// Note: "light_intensity" is deliberately left out of REAL_SENSOR_TYPES.
-// The ESP32 firmware still fills that MQTT field with a placeholder value
-// (no BH1750 installed), which makes the backend's iot_registry mark it
-// data_source="esp32" — i.e. "real" — the moment any MQTT message arrives.
-// It must always render as Not Connected regardless of what the backend
-// reports, since there is no real light sensor.
-export const NEVER_REAL_SENSOR_TYPES = ["light_intensity"];
+// Sensor types that must never be treated as real regardless of what the
+// backend reports for them. Currently empty - every sensor type above is
+// real, connected hardware.
+export const NEVER_REAL_SENSOR_TYPES = [];
 
 // Real, controllable pumps — the only two devices with an actual backend
 // relay endpoint (POST /iot/control). Shared between the Automation page
@@ -82,13 +80,12 @@ export function isRecentlyUpdated(isoTimestamp, thresholdMs = STALE_THRESHOLD_MS
   return Date.now() - new Date(isoTimestamp).getTime() < thresholdMs;
 }
 
-// POST /analyze's SensorReading payload requires a light_intensity value
-// even though there's no real light sensor — the backend evaluates every
-// field it's given, so a placeholder light value would otherwise let a
-// fabricated reading silently produce a fake "light critical" issue and
-// contaminate the AI's overall status. These two helpers strip any
-// light_intensity issue out of the response and recompute the status from
-// what's left, so the AI verdict is only ever driven by real sensor data.
+// General-purpose guard for AI-analysis responses: strips out any issue
+// for a sensor type listed in NEVER_REAL_SENSOR_TYPES before deriving a
+// status, so a fabricated input can't silently contaminate the AI
+// verdict. Currently a no-op (NEVER_REAL_SENSOR_TYPES is empty) - kept in
+// place as the mechanism to reuse if a future sensor's live value isn't
+// actually wired into the /analyze payload yet.
 export function excludeNeverRealIssues(issues) {
   return (issues || []).filter((issue) => !NEVER_REAL_SENSOR_TYPES.includes(issue.parameter));
 }

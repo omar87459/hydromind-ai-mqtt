@@ -94,6 +94,7 @@ export default function OverviewPage() {
             unit={r.unit}
             lastUpdate={r.lastUpdate}
             lastUpdateLabel={t("sensors.lastUpdate")}
+            lines={r.secondaryLabel ? [{ label: r.secondaryLabel, value: r.secondaryValue }] : undefined}
           />
         ))}
       </div>

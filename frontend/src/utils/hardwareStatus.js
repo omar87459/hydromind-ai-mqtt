@@ -27,12 +27,16 @@ export const REAL_SENSOR_TYPES = [
 // real, connected hardware.
 export const NEVER_REAL_SENSOR_TYPES = [];
 
-// Real, controllable pumps — the only two devices with an actual backend
-// relay endpoint (POST /iot/control). Shared between the Automation page
-// and Energy Dashboard's Smart Control section so both stay in sync.
+// Real, controllable pumps — devices with an actual backend relay/MOSFET
+// endpoint (POST /iot/control). Shared between the Automation page and
+// Energy Dashboard's Smart Control section so both stay in sync.
 export const REAL_CONTROLLABLE_PUMPS = [
   { key: "mainPump", nameKey: "devices.mainPump" },
   { key: "phPump", nameKey: "devices.refillPump" }, // API key unchanged; relay was physically repurposed
+  // Real, MOSFET-switched dosing pump (GPIO14). Not to be confused with
+  // "phPump" above (the relay-repurposed refill pump) - separate device,
+  // separate key.
+  { key: "phUpPump", nameKey: "devices.phUpPump" },
 ];
 
 // Devices named in the product spec that have no backend/hardware support
@@ -42,7 +46,10 @@ export const REAL_CONTROLLABLE_PUMPS = [
 // applies to: "control" (Automation page / Smart Control), "power" (Power
 // Dashboard), "consumption" (Device Energy Consumption).
 export const NOT_YET_CONNECTED_DEVICES = [
-  { id: "phUpPump", nameKey: "devices.phUpPump", contexts: ["control", "power", "consumption"] },
+  // phUpPump is now real for control (see REAL_CONTROLLABLE_PUMPS above) -
+  // it stays listed here for "power"/"consumption" only, since its WCMCU
+  // power monitoring isn't wired yet (module #2 unpopulated).
+  { id: "phUpPump", nameKey: "devices.phUpPump", contexts: ["power", "consumption"] },
   { id: "phDownPump", nameKey: "devices.phDownPump", contexts: ["control", "power", "consumption"] },
   { id: "nutrientPumpA", nameKey: "devices.nutrientPumpA", contexts: ["control", "power", "consumption"] },
   { id: "nutrientPumpB", nameKey: "devices.nutrientPumpB", contexts: ["control", "power", "consumption"] },

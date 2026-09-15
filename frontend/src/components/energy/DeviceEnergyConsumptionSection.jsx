@@ -1,7 +1,12 @@
 import { useTranslation } from "react-i18next";
 import { REAL_CONTROLLABLE_PUMPS, NOT_YET_CONNECTED_DEVICES } from "../../utils/hardwareStatus";
 
-const consumptionDevices = NOT_YET_CONNECTED_DEVICES.filter((d) => d.contexts.includes("consumption"));
+// phUpPump is real for control now (see REAL_CONTROLLABLE_PUMPS below) but
+// still listed here for "consumption" (its power monitoring isn't wired) -
+// exclude it here so it doesn't render twice.
+const consumptionDevices = NOT_YET_CONNECTED_DEVICES.filter(
+  (d) => d.contexts.includes("consumption") && !REAL_CONTROLLABLE_PUMPS.some((p) => p.key === d.id)
+);
 
 // No backend history endpoint exists for energy consumption over time —
 // not for the 2 real pumps, and not for anything else. Every cell here is

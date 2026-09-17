@@ -126,6 +126,21 @@ export async function postIotControl(
   return data;
 }
 
+export async function postLightBrightness(
+  brightness,
+  password
+) {
+  const { data } = await client.post(
+    "/iot/control/brightness",
+    {
+      brightness,
+      password,
+    }
+  );
+
+  return data;
+}
+
 export async function fetchEnergyLive() {
   const { data } = await client.get("/energy/live");
   return data;

@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import ConnectionBadge from "../common/ConnectionBadge";
 import RequireAdmin from "../common/RequireAdmin";
@@ -20,10 +21,29 @@ function relativeTime(iso) {
 // pair is currently ON. This is a UI convenience only - the ESP32 firmware
 // itself (setPhUpPump()/setPhDownPump()) is what actually enforces the
 // interlock, so this can never be bypassed by acting fast in the UI.
-export default function RealDeviceControlCard({ nameKey, pump, pending, password, onToggle, blocked }) {
+//
+// `brightness` (boolean) marks a device as PWM-dimmable (grow light only,
+// today). `onBrightnessChange(percent, password)` round-trips through the
+// real POST /iot/control/brightness endpoint - never applied locally only.
+export default function RealDeviceControlCard({
+  nameKey,
+  pump,
+  pending,
+  password,
+  onToggle,
+  blocked,
+  brightness,
+  brightnessPending,
+  onBrightnessChange,
+}) {
   const { t } = useTranslation();
   const isOn = !!pump?.state;
   const confirmed = pump?.source === "esp32";
+  const [localBrightness, setLocalBrightness] = useState(pump?.brightness ?? 0);
+
+  useEffect(() => {
+    if (pump?.brightness != null) setLocalBrightness(pump.brightness);
+  }, [pump?.brightness]);
 
   function handle(state) {
     if (!password) {
@@ -31,6 +51,14 @@ export default function RealDeviceControlCard({ nameKey, pump, pending, password
       return;
     }
     onToggle(state, password);
+  }
+
+  function commitBrightness(value) {
+    if (!password) {
+      alert(t("automation.enterPassword"));
+      return;
+    }
+    onBrightnessChange(value, password);
   }
 
   return (
@@ -67,6 +95,28 @@ export default function RealDeviceControlCard({ nameKey, pump, pending, password
             {t("common.off")}
           </button>
         </div>
+
+        {brightness && (
+          <div className="mt-12">
+            <div className="flex items-center justify-between">
+              <span className="kv-label" style={{ fontSize: 12 }}>
+                {t("automation.brightness")}
+              </span>
+              <span className="kv-value">{localBrightness}%</span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={localBrightness}
+              disabled={brightnessPending}
+              onChange={(e) => setLocalBrightness(Number(e.target.value))}
+              onMouseUp={(e) => commitBrightness(Number(e.target.value))}
+              onTouchEnd={(e) => commitBrightness(Number(e.target.value))}
+              style={{ width: "100%" }}
+            />
+          </div>
+        )}
       </RequireAdmin>
 
       <div className="kv-row mt-12">

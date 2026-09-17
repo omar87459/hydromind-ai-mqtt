@@ -79,9 +79,8 @@
     "refillPump": "مضخة التعويض",
     "phUpPump": "مضخة رفع الحموضة",
     "phDownPump": "مضخة خفض الحموضة",
-    "nutrientPumpA": "مضخة المغذيات أ",
-    "nutrientPumpB": "مضخة المغذيات ب",
-    "ledGrowLight": "إضاءة LED للنمو",
+    "nutrientPumpAB": "مضخة المغذيات أ+ب",
+    "ledGrowLight": "إضاءة النمو",
     "esp32Controller": "وحدة تحكم ESP32"
   },
   "automation": {

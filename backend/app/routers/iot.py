@@ -3,7 +3,7 @@ import os
 from fastapi import APIRouter, HTTPException
 
 from .. import mqtt_client
-from ..models import IoTModeRequest, IoTReadingRequest, PumpControlRequest
+from ..models import IoTModeRequest, IoTReadingRequest, LightBrightnessRequest, PumpControlRequest
 from ..services import iot_diagnostics, iot_registry, pump_registry
 
 
@@ -132,6 +132,46 @@ def post_control(payload: PumpControlRequest):
     mqtt_client.publish_pump_command(
         payload.pump,
         payload.state
+    )
+
+
+    return record
+
+
+@router.post("/control/brightness")
+def post_control_brightness(payload: LightBrightnessRequest):
+    """
+    Grow light brightness control (0-100%). Same password gate as
+    /iot/control; separate endpoint since brightness isn't an on/off pump
+    command.
+    """
+
+    correct_password = os.getenv(
+        "PUMP_CONTROL_PASSWORD",
+        "hydro100"
+    )
+
+    if payload.password != correct_password:
+        raise HTTPException(
+            status_code=403,
+            detail="Wrong password"
+        )
+
+
+    try:
+        record = pump_registry.set_brightness(
+            "ledGrowLight",
+            payload.brightness
+        )
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=400,
+            detail=str(exc)
+        )
+
+
+    mqtt_client.publish_light_brightness(
+        payload.brightness
     )
 
 

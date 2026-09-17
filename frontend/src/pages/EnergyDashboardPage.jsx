@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { fetchMqttData, fetchIotPumps, postIotControl } from "../api";
+import { fetchMqttData, fetchIotPumps, postIotControl, postLightBrightness } from "../api";
 import { LoadingBlock, ErrorBlock } from "../components/common/AsyncState";
 import Tabs from "../components/common/Tabs";
 import PowerDashboard from "../components/energy/PowerDashboard";
@@ -72,6 +72,18 @@ export default function EnergyDashboardPage() {
     }
   }
 
+  async function handleBrightnessChange(value, pwd) {
+    setPending((prev) => ({ ...prev, ledGrowLight_brightness: true }));
+    try {
+      const record = await postLightBrightness(value, pwd);
+      setPumps((prev) => ({ ...prev, ledGrowLight: record }));
+    } catch (err) {
+      alert(err.response?.status === 403 ? t("automation.wrongPassword") : t("automation.controlFailed"));
+    } finally {
+      setPending((prev) => ({ ...prev, ledGrowLight_brightness: false }));
+    }
+  }
+
   if (!mqttData && !error) return <LoadingBlock label={t("common.loading")} />;
 
   return (
@@ -133,7 +145,7 @@ export default function EnergyDashboardPage() {
           </RequireAdmin>
 
           <div className="grid grid-cols-2 gap-12">
-            {REAL_CONTROLLABLE_PUMPS.map(({ key, nameKey }) => {
+            {REAL_CONTROLLABLE_PUMPS.map(({ key, nameKey, brightness }) => {
               const otherKey = MUTUALLY_EXCLUSIVE_PUMPS[key];
               const blocked = Boolean(otherKey && pumps[otherKey]?.state);
               return (
@@ -145,6 +157,9 @@ export default function EnergyDashboardPage() {
                     password={password}
                     onToggle={(state, pwd) => handleToggle(key, state, pwd)}
                     blocked={blocked}
+                    brightness={brightness}
+                    brightnessPending={pending.ledGrowLight_brightness}
+                    onBrightnessChange={handleBrightnessChange}
                   />
                 </div>
               );

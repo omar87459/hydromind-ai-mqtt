@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { fetchIotPumps, postIotControl } from "../api";
+import { fetchIotPumps, postIotControl, postLightBrightness } from "../api";
 import { REAL_CONTROLLABLE_PUMPS, NOT_YET_CONNECTED_DEVICES, MUTUALLY_EXCLUSIVE_PUMPS } from "../utils/hardwareStatus";
 import ConnectionBadge from "../components/common/ConnectionBadge";
 import Collapsible from "../components/common/Collapsible";
@@ -56,6 +56,18 @@ export default function AutomationControlPage() {
     }
   }
 
+  async function handleBrightnessChange(value, pwd) {
+    setPending((prev) => ({ ...prev, ledGrowLight_brightness: true }));
+    try {
+      const record = await postLightBrightness(value, pwd);
+      setPumps((prev) => ({ ...prev, ledGrowLight: record }));
+    } catch (err) {
+      alert(err.response?.status === 403 ? t("automation.wrongPassword") : t("automation.controlFailed"));
+    } finally {
+      setPending((prev) => ({ ...prev, ledGrowLight_brightness: false }));
+    }
+  }
+
   return (
     <div>
       <p className="section-sub">{t("automation.intro")}</p>
@@ -84,7 +96,7 @@ export default function AutomationControlPage() {
       </RequireAdmin>
 
       <div className="flex flex-col gap-12">
-        {REAL_CONTROLLABLE_PUMPS.map(({ key, nameKey }) => {
+        {REAL_CONTROLLABLE_PUMPS.map(({ key, nameKey, brightness }) => {
           const pump = pumps[key];
           const otherKey = MUTUALLY_EXCLUSIVE_PUMPS[key];
           const blocked = Boolean(otherKey && pumps[otherKey]?.state);
@@ -101,6 +113,9 @@ export default function AutomationControlPage() {
                 password={password}
                 onToggle={(state, pwd) => handleToggle(key, state, pwd)}
                 blocked={blocked}
+                brightness={brightness}
+                brightnessPending={pending.ledGrowLight_brightness}
+                onBrightnessChange={handleBrightnessChange}
               />
             </Collapsible>
           );

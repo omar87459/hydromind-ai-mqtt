@@ -40,6 +40,12 @@ export const REAL_CONTROLLABLE_PUMPS = [
   // this isn't only a frontend restriction.
   { key: "phUpPump", nameKey: "devices.phUpPump" },
   { key: "phDownPump", nameKey: "devices.phDownPump" },
+  // Pump A and Pump B are wired in parallel to ONE MOSFET (GPIO26) - there
+  // is no independent A/B control anymore, only this single actuator.
+  { key: "nutrientPumpAB", nameKey: "devices.nutrientPumpAB" },
+  // MOSFET + PWM (GPIO18) - the only controllable device here with a
+  // brightness slider (0-100%, sent through POST /iot/control/brightness).
+  { key: "ledGrowLight", nameKey: "devices.ledGrowLight", brightness: true },
 ];
 
 // Pumps that are physically interlocked in the firmware (hhh.ino's
@@ -59,16 +65,17 @@ export const MUTUALLY_EXCLUSIVE_PUMPS = {
 // applies to: "control" (Automation page / Smart Control), "power" (Power
 // Dashboard), "consumption" (Device Energy Consumption).
 export const NOT_YET_CONNECTED_DEVICES = [
-  // phUpPump/phDownPump are now real for control (see
-  // REAL_CONTROLLABLE_PUMPS above) - they stay listed here for
-  // "power"/"consumption" only, since neither has a WCMCU power
-  // monitoring channel assigned yet (module #1 CH3 is reserved but
-  // unpopulated; module #2 is unpopulated).
+  // phUpPump/phDownPump/nutrientPumpAB/ledGrowLight are now real for
+  // control (see REAL_CONTROLLABLE_PUMPS above) - they stay listed here
+  // for "power"/"consumption" only. None of the four have a WCMCU power
+  // monitoring channel assigned (module #1 CH3 is reserved but
+  // unpopulated; module #2 is unpopulated) - they're driven by direct
+  // ESP32 GPIO/MOSFET outputs with no dedicated measurement channel, so
+  // no invented WCMCU reading is shown for them.
   { id: "phUpPump", nameKey: "devices.phUpPump", contexts: ["power", "consumption"] },
   { id: "phDownPump", nameKey: "devices.phDownPump", contexts: ["power", "consumption"] },
-  { id: "nutrientPumpA", nameKey: "devices.nutrientPumpA", contexts: ["control", "power", "consumption"] },
-  { id: "nutrientPumpB", nameKey: "devices.nutrientPumpB", contexts: ["control", "power", "consumption"] },
-  { id: "ledGrowLight", nameKey: "devices.ledGrowLight", contexts: ["control", "power", "consumption"], brightness: true },
+  { id: "nutrientPumpAB", nameKey: "devices.nutrientPumpAB", contexts: ["power", "consumption"] },
+  { id: "ledGrowLight", nameKey: "devices.ledGrowLight", contexts: ["power", "consumption"], brightness: true },
   { id: "esp32Controller", nameKey: "devices.esp32Controller", contexts: ["power", "consumption"] },
 ];
 

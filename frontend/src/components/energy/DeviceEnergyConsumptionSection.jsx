@@ -9,9 +9,9 @@ const consumptionDevices = NOT_YET_CONNECTED_DEVICES.filter(
 );
 
 // No backend history endpoint exists for energy consumption over time —
-// not for the 2 real pumps, and not for anything else. Every cell here is
-// a static placeholder for all 8 devices; there is nothing real to fetch,
-// so this section intentionally makes no API call.
+// not for the real, controllable devices, and not for anything else. Every
+// cell here is a static placeholder; there is nothing real to fetch, so
+// this section intentionally makes no API call.
 export default function DeviceEnergyConsumptionSection() {
   const { t } = useTranslation();
 

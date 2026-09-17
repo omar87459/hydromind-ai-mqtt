@@ -79,9 +79,8 @@
     "refillPump": "Refill Pump",
     "phUpPump": "pH Up Pump",
     "phDownPump": "pH Down Pump",
-    "nutrientPumpA": "Nutrient Pump A",
-    "nutrientPumpB": "Nutrient Pump B",
-    "ledGrowLight": "LED Grow Light",
+    "nutrientPumpAB": "Nutrient Pump A+B",
+    "ledGrowLight": "Grow Light",
     "esp32Controller": "ESP32 Controller"
   },
   "automation": {

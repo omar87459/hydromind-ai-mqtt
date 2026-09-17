@@ -182,6 +182,40 @@ def publish_pump_command(pump: str, state: bool) -> bool:
         return False
 
 
+def publish_light_brightness(brightness: int) -> bool:
+    """
+    Grow light brightness (0-100%), same topic and connection as
+    publish_pump_command() above - just the ESP32's existing top-level
+    "light" key (doc.containsKey("light") in hhh.ino) instead of the
+    {"pump","state"} shape, since brightness isn't an on/off command.
+    """
+
+    payload = json.dumps(
+        {
+            "light": brightness,
+        }
+    )
+
+    try:
+
+        result = client.publish(
+            MQTT_CONTROL_TOPIC,
+            payload,
+            qos=1,
+        )
+
+        return result.rc == mqtt.MQTT_ERR_SUCCESS
+
+    except Exception as e:
+
+        print(
+            "MQTT publish error:",
+            e
+        )
+
+        return False
+
+
 
 
 def start_mqtt():

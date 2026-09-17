@@ -142,13 +142,25 @@ class IoTModeRequest(BaseModel):
 class PumpControlRequest(BaseModel):
     """
     Body for POST /iot/control —
-    turns a relay-controlled pump on/off.
+    turns a relay- or MOSFET-controlled actuator on/off.
 
     Requires password authentication.
     """
 
-    pump: str  # "mainPump" | "phPump"
+    pump: str  # "mainPump" | "phPump" | "phUpPump" | "phDownPump" | "nutrientPumpAB" | "ledGrowLight"
     state: bool
+    password: str
+
+
+class LightBrightnessRequest(BaseModel):
+    """
+    Body for POST /iot/control/brightness —
+    sets the grow light's PWM brightness (0-100%). Same password gate as
+    PumpControlRequest above; separate from on/off since brightness isn't
+    a pump state.
+    """
+
+    brightness: int
     password: str
 
 

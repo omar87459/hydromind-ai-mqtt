@@ -16,6 +16,7 @@ PUMP_DEFS = {
     "mainPump": {"label": "Main Pump", "gpio": 23},
     "phPump": {"label": "pH Pump", "gpio": 22},
     "phUpPump": {"label": "pH Up Pump", "gpio": 14},
+    "phDownPump": {"label": "pH Down Pump", "gpio": 16},
 }
 
 

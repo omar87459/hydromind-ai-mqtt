@@ -33,11 +33,24 @@ export const NEVER_REAL_SENSOR_TYPES = [];
 export const REAL_CONTROLLABLE_PUMPS = [
   { key: "mainPump", nameKey: "devices.mainPump" },
   { key: "phPump", nameKey: "devices.refillPump" }, // API key unchanged; relay was physically repurposed
-  // Real, MOSFET-switched dosing pump (GPIO14). Not to be confused with
-  // "phPump" above (the relay-repurposed refill pump) - separate device,
-  // separate key.
+  // Real, MOSFET-switched dosing pumps (GPIO14 / GPIO16). Not to be
+  // confused with "phPump" above (the relay-repurposed refill pump) -
+  // separate devices, separate keys. The firmware itself enforces mutual
+  // exclusion between these two (see MUTUALLY_EXCLUSIVE_PUMPS below) -
+  // this isn't only a frontend restriction.
   { key: "phUpPump", nameKey: "devices.phUpPump" },
+  { key: "phDownPump", nameKey: "devices.phDownPump" },
 ];
+
+// Pumps that are physically interlocked in the firmware (hhh.ino's
+// setPhUpPump()/setPhDownPump() each force the other off before turning
+// on) and must never both be ON at once. Maps each pump key to the other
+// key in its exclusive pair, so any page rendering REAL_CONTROLLABLE_PUMPS
+// can show "blocked" without duplicating this pairing itself.
+export const MUTUALLY_EXCLUSIVE_PUMPS = {
+  phUpPump: "phDownPump",
+  phDownPump: "phUpPump",
+};
 
 // Devices named in the product spec that have no backend/hardware support
 // at all yet — no control endpoint, no power/energy reading, nothing.
@@ -46,11 +59,13 @@ export const REAL_CONTROLLABLE_PUMPS = [
 // applies to: "control" (Automation page / Smart Control), "power" (Power
 // Dashboard), "consumption" (Device Energy Consumption).
 export const NOT_YET_CONNECTED_DEVICES = [
-  // phUpPump is now real for control (see REAL_CONTROLLABLE_PUMPS above) -
-  // it stays listed here for "power"/"consumption" only, since its WCMCU
-  // power monitoring isn't wired yet (module #2 unpopulated).
+  // phUpPump/phDownPump are now real for control (see
+  // REAL_CONTROLLABLE_PUMPS above) - they stay listed here for
+  // "power"/"consumption" only, since neither has a WCMCU power
+  // monitoring channel assigned yet (module #1 CH3 is reserved but
+  // unpopulated; module #2 is unpopulated).
   { id: "phUpPump", nameKey: "devices.phUpPump", contexts: ["power", "consumption"] },
-  { id: "phDownPump", nameKey: "devices.phDownPump", contexts: ["control", "power", "consumption"] },
+  { id: "phDownPump", nameKey: "devices.phDownPump", contexts: ["power", "consumption"] },
   { id: "nutrientPumpA", nameKey: "devices.nutrientPumpA", contexts: ["control", "power", "consumption"] },
   { id: "nutrientPumpB", nameKey: "devices.nutrientPumpB", contexts: ["control", "power", "consumption"] },
   { id: "ledGrowLight", nameKey: "devices.ledGrowLight", contexts: ["control", "power", "consumption"], brightness: true },

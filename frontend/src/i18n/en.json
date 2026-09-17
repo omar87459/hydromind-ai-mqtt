@@ -95,7 +95,8 @@
     "lastAction": "Last Action",
     "brightness": "Brightness",
     "wrongPassword": "Wrong pump password.",
-    "controlFailed": "Device control failed."
+    "controlFailed": "Device control failed.",
+    "phDosingBlocked": "Blocked / Other pH dosing pump is running"
   },
   "nav": {
     "brandName": "HydroMind AI",

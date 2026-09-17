@@ -95,7 +95,8 @@
     "lastAction": "آخر إجراء",
     "brightness": "السطوع",
     "wrongPassword": "كلمة مرور المضخة غير صحيحة.",
-    "controlFailed": "فشل التحكم بالجهاز."
+    "controlFailed": "فشل التحكم بالجهاز.",
+    "phDosingBlocked": "محظور / مضخة الحموضة الأخرى قيد التشغيل"
   },
   "nav": {
     "brandName": "HydroMind AI",

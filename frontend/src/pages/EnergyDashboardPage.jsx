@@ -9,7 +9,7 @@ import DeviceEnergyConsumptionSection from "../components/energy/DeviceEnergyCon
 import RealDeviceControlCard from "../components/automation/RealDeviceControlCard";
 import NotConnectedDeviceCard from "../components/automation/NotConnectedDeviceCard";
 import RequireAdmin from "../components/common/RequireAdmin";
-import { REAL_CONTROLLABLE_PUMPS, NOT_YET_CONNECTED_DEVICES } from "../utils/hardwareStatus";
+import { REAL_CONTROLLABLE_PUMPS, NOT_YET_CONNECTED_DEVICES, MUTUALLY_EXCLUSIVE_PUMPS } from "../utils/hardwareStatus";
 
 const POLL_INTERVAL_MS = 3000;
 
@@ -133,17 +133,22 @@ export default function EnergyDashboardPage() {
           </RequireAdmin>
 
           <div className="grid grid-cols-2 gap-12">
-            {REAL_CONTROLLABLE_PUMPS.map(({ key, nameKey }) => (
-              <div className="card" key={key}>
-                <RealDeviceControlCard
-                  nameKey={nameKey}
-                  pump={pumps[key]}
-                  pending={pending[key]}
-                  password={password}
-                  onToggle={(state, pwd) => handleToggle(key, state, pwd)}
-                />
-              </div>
-            ))}
+            {REAL_CONTROLLABLE_PUMPS.map(({ key, nameKey }) => {
+              const otherKey = MUTUALLY_EXCLUSIVE_PUMPS[key];
+              const blocked = Boolean(otherKey && pumps[otherKey]?.state);
+              return (
+                <div className="card" key={key}>
+                  <RealDeviceControlCard
+                    nameKey={nameKey}
+                    pump={pumps[key]}
+                    pending={pending[key]}
+                    password={password}
+                    onToggle={(state, pwd) => handleToggle(key, state, pwd)}
+                    blocked={blocked}
+                  />
+                </div>
+              );
+            })}
             {controlPlaceholders.map((device) => (
               <div className="card" key={device.id}>
                 <NotConnectedDeviceCard nameKey={device.nameKey} brightness={device.brightness} />

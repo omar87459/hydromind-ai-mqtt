@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { fetchIotPumps, postIotControl } from "../api";
-import { REAL_CONTROLLABLE_PUMPS, NOT_YET_CONNECTED_DEVICES } from "../utils/hardwareStatus";
+import { REAL_CONTROLLABLE_PUMPS, NOT_YET_CONNECTED_DEVICES, MUTUALLY_EXCLUSIVE_PUMPS } from "../utils/hardwareStatus";
 import ConnectionBadge from "../components/common/ConnectionBadge";
 import Collapsible from "../components/common/Collapsible";
 import RealDeviceControlCard from "../components/automation/RealDeviceControlCard";
@@ -86,6 +86,8 @@ export default function AutomationControlPage() {
       <div className="flex flex-col gap-12">
         {REAL_CONTROLLABLE_PUMPS.map(({ key, nameKey }) => {
           const pump = pumps[key];
+          const otherKey = MUTUALLY_EXCLUSIVE_PUMPS[key];
+          const blocked = Boolean(otherKey && pumps[otherKey]?.state);
           return (
             <Collapsible
               key={key}
@@ -98,6 +100,7 @@ export default function AutomationControlPage() {
                 pending={pending[key]}
                 password={password}
                 onToggle={(state, pwd) => handleToggle(key, state, pwd)}
+                blocked={blocked}
               />
             </Collapsible>
           );

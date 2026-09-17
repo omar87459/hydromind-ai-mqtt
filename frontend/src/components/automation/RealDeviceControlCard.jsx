@@ -10,11 +10,17 @@ function relativeTime(iso) {
   return `${Math.round(diff / 3600)}h`;
 }
 
-// One real, relay-controlled device (Main Pump / Refill Pump today — the
-// only two with an actual backend endpoint). `password` is entered once
-// by the caller and passed down; every action still round-trips through
-// the real POST /iot/control password check server-side.
-export default function RealDeviceControlCard({ nameKey, pump, pending, password, onToggle }) {
+// One real, relay- or MOSFET-controlled device (Main Pump / Refill Pump /
+// pH Up / pH Down today). `password` is entered once by the caller and
+// passed down; every action still round-trips through the real
+// POST /iot/control password check server-side.
+//
+// `blocked` is set by the caller when this pump is part of a mutually
+// exclusive pair (see MUTUALLY_EXCLUSIVE_PUMPS) and the OTHER pump in the
+// pair is currently ON. This is a UI convenience only - the ESP32 firmware
+// itself (setPhUpPump()/setPhDownPump()) is what actually enforces the
+// interlock, so this can never be bypassed by acting fast in the UI.
+export default function RealDeviceControlCard({ nameKey, pump, pending, password, onToggle, blocked }) {
   const { t } = useTranslation();
   const isOn = !!pump?.state;
   const confirmed = pump?.source === "esp32";
@@ -38,6 +44,12 @@ export default function RealDeviceControlCard({ nameKey, pump, pending, password
         {isOn ? t("common.on") : t("common.off")}
       </span>
 
+      {blocked && (
+        <span className="badge mt-8 badge-warning" style={{ display: "inline-flex", marginInlineStart: 6 }}>
+          {t("automation.phDosingBlocked")}
+        </span>
+      )}
+
       <RequireAdmin>
         <div className="grid grid-cols-3 gap-6 mt-12">
           <button className="btn btn-sm" disabled title={t("automation.autoUnavailable")}>
@@ -45,7 +57,8 @@ export default function RealDeviceControlCard({ nameKey, pump, pending, password
           </button>
           <button
             className={`btn btn-sm ${isOn ? "" : "btn-primary"}`}
-            disabled={pending || isOn}
+            disabled={pending || isOn || blocked}
+            title={blocked ? t("automation.phDosingBlocked") : undefined}
             onClick={() => handle(true)}
           >
             {t("common.on")}

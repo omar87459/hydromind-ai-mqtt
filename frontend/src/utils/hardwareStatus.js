@@ -65,16 +65,23 @@ export const MUTUALLY_EXCLUSIVE_PUMPS = {
 // applies to: "control" (Automation page / Smart Control), "power" (Power
 // Dashboard), "consumption" (Device Energy Consumption).
 export const NOT_YET_CONNECTED_DEVICES = [
-  // phUpPump/phDownPump/nutrientPumpAB/ledGrowLight are now real for
-  // control (see REAL_CONTROLLABLE_PUMPS above) - they stay listed here
-  // for "power"/"consumption" only. None of the four have a WCMCU power
-  // monitoring channel assigned (module #1 CH3 is reserved but
-  // unpopulated; module #2 is unpopulated) - they're driven by direct
-  // ESP32 GPIO/MOSFET outputs with no dedicated measurement channel, so
-  // no invented WCMCU reading is shown for them.
-  { id: "phUpPump", nameKey: "devices.phUpPump", contexts: ["power", "consumption"] },
-  { id: "phDownPump", nameKey: "devices.phDownPump", contexts: ["power", "consumption"] },
-  { id: "nutrientPumpAB", nameKey: "devices.nutrientPumpAB", contexts: ["power", "consumption"] },
+  // phUpPump/phDownPump/nutrientPumpAB are real for control (see
+  // REAL_CONTROLLABLE_PUMPS above) AND now have a real WCMCU-3221 power
+  // monitoring channel each (INA3221 Module #2, CH1/CH2/CH3) - they are
+  // NOT listed with "power" here any more; PowerDashboard.jsx renders them
+  // directly from mqttData.powerMonitoring, same as mainPump/refillPump.
+  // They stay listed here for "consumption" only, since no backend history
+  // endpoint exists for ANY device yet (see DeviceEnergyConsumptionSection's
+  // own comment) - that placeholder table is unrelated to whether a power
+  // channel exists.
+  //
+  // ledGrowLight and esp32Controller remain listed for "power"/"consumption"
+  // both: neither has a WCMCU channel assigned (the grow light is a plain
+  // MOSFET output with no dedicated measurement channel; the ESP32
+  // controller itself was never one of the five monitored loads).
+  { id: "phUpPump", nameKey: "devices.phUpPump", contexts: ["consumption"] },
+  { id: "phDownPump", nameKey: "devices.phDownPump", contexts: ["consumption"] },
+  { id: "nutrientPumpAB", nameKey: "devices.nutrientPumpAB", contexts: ["consumption"] },
   { id: "ledGrowLight", nameKey: "devices.ledGrowLight", contexts: ["power", "consumption"], brightness: true },
   { id: "esp32Controller", nameKey: "devices.esp32Controller", contexts: ["power", "consumption"] },
 ];

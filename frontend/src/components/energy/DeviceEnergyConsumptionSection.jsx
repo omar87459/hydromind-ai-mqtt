@@ -1,9 +1,13 @@
 import { useTranslation } from "react-i18next";
 import { REAL_CONTROLLABLE_PUMPS, NOT_YET_CONNECTED_DEVICES } from "../../utils/hardwareStatus";
 
-// phUpPump is real for control now (see REAL_CONTROLLABLE_PUMPS below) but
-// still listed here for "consumption" (its power monitoring isn't wired) -
-// exclude it here so it doesn't render twice.
+// phUpPump/phDownPump/nutrientPumpAB are real for both control AND power
+// monitoring now (see REAL_CONTROLLABLE_PUMPS and PowerDashboard.jsx), but
+// still listed in NOT_YET_CONNECTED_DEVICES for "consumption" only - no
+// backend history endpoint exists for ANY device's energy-over-time yet
+// (see this file's own note below), unrelated to whether a live power
+// reading exists. Excluded here so they don't render twice alongside
+// REAL_CONTROLLABLE_PUMPS above.
 const consumptionDevices = NOT_YET_CONNECTED_DEVICES.filter(
   (d) => d.contexts.includes("consumption") && !REAL_CONTROLLABLE_PUMPS.some((p) => p.key === d.id)
 );

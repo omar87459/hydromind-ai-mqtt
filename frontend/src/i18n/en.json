@@ -392,7 +392,7 @@
     },
     "powerDashboard": {
       "title": "Power Dashboard",
-      "subtitle": "Live WCMCU-3221 voltage/current/power readings for the two connected pump relays — real hardware, not simulated.",
+      "subtitle": "Live WCMCU-3221 voltage/current/power readings for all five connected loads — real hardware, not simulated.",
       "mainPump": "Main Pump",
       "refillPump": "Refill Pump",
       "energy": "Energy",

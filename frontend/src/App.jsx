@@ -19,6 +19,7 @@ import ArchitecturePage from "./pages/ArchitecturePage";
 import ModelLabPage from "./pages/ModelLabPage";
 import FarmConnectivityPage from "./pages/FarmConnectivityPage";
 import EnergyDashboardPage from "./pages/EnergyDashboardPage";
+import SensorConnectivityPage from "./pages/SensorConnectivityPage";
 
 const PAGE_META = {
   "/": { titleKey: "overviewTitle", subtitleKey: "overviewSubtitle" },
@@ -32,6 +33,7 @@ const PAGE_META = {
   "/model-lab": { titleKey: "modelLabTitle", subtitleKey: "modelLabSubtitle" },
   "/farm-network": { titleKey: "farmNetworkTitle", subtitleKey: "farmNetworkSubtitle" },
   "/energy": { titleKey: "energyTitle", subtitleKey: "energySubtitle" },
+  "/sensors": { titleKey: "sensorsTitle", subtitleKey: "sensorsSubtitle" },
 };
 
 function AuthedShell() {
@@ -72,6 +74,7 @@ function AuthedShell() {
             <Route path="/model-lab" element={<ModelLabPage />} />
             <Route path="/farm-network" element={<FarmConnectivityPage />} />
             <Route path="/energy" element={<EnergyDashboardPage />} />
+            <Route path="/sensors" element={<SensorConnectivityPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>

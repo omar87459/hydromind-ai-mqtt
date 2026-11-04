@@ -1,17 +1,20 @@
 import { NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { LayoutDashboard, Activity, SlidersHorizontal, Zap, MessageCircle, Satellite, X } from "lucide-react";
+import { LayoutDashboard, Sprout, TrendingUp, Activity, SlidersHorizontal, MessageCircle, Zap, Wifi, X } from "lucide-react";
 
-// Crops/Methods/Growth Stages/AI Model Lab/Farm Network keep their working
-// routes (see App.jsx) but are intentionally left out of primary nav — the
-// platform's nav is scoped to these 6 pages.
+// Overview is a separate home/dashboard entry, not one of the seven
+// approved pages below. Methods/AI Model Lab/Farm Network/System
+// Architecture keep their working routes (see App.jsx) but are
+// intentionally left out of this nav.
 const NAV_ITEMS = [
   { to: "/", key: "overview", icon: LayoutDashboard, end: true },
+  { to: "/crops", key: "crops", icon: Sprout },
+  { to: "/growth", key: "growth", icon: TrendingUp },
   { to: "/monitoring", key: "monitoring", icon: Activity },
   { to: "/automation", key: "automation", icon: SlidersHorizontal },
-  { to: "/energy", key: "energy", icon: Zap },
   { to: "/assistant", key: "assistant", icon: MessageCircle },
-  { to: "/architecture", key: "architecture", icon: Satellite },
+  { to: "/energy", key: "energy", icon: Zap },
+  { to: "/sensors", key: "sensors", icon: Wifi },
 ];
 
 export default function Sidebar({ open, onClose }) {
